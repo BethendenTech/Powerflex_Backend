@@ -143,6 +143,7 @@ def calculate_system_components(total_load_kwh, coverage_percentage, components_
     return {
         "total_load_kwh": total_load_kwh,
         "load_covered_by_solar": load_covered_by_solar,
+        "total_equipments": round(number_of_panels+number_of_inverters+number_of_batteries),
         "number_of_panels": round(number_of_panels),
         "number_of_inverters": round(number_of_inverters),
         "number_of_batteries": round(number_of_batteries),
