@@ -1,0 +1,9 @@
+POST {{baseUrl}}api/submit-details/ HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Nadim Sheikh",
+    "email": "nadim.sheikh.07@gmail.com",
+    "phone_number": "7737033665"
+}
