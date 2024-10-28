@@ -37,7 +37,9 @@ class QuoteSerializer(serializers.Serializer):
     total_panel_cost_naira = serializers.FloatField(read_only=True)
     total_inverter_cost_naira = serializers.FloatField(read_only=True)
     total_battery_cost_naira = serializers.FloatField(read_only=True)
-    miscellaneous_cost = serializers.FloatField(read_only=True)
+    installer_cost = serializers.FloatField(read_only=True)
+    vat = serializers.FloatField(read_only=True)
+    cabling_cost = serializers.FloatField(read_only=True)
 
     def create(self, validated_data):
         calculated_values = calculate_quote(validated_data['electricity_spend'], validated_data['price_band'], validated_data['solar_load'], validated_data['battery_autonomy_hours'], validated_data['breakdowns'])
@@ -64,7 +66,7 @@ class CreateQuoteSerializer(serializers.Serializer):
     total_panel_cost_naira = serializers.FloatField(read_only=True)
     total_inverter_cost_naira = serializers.FloatField(read_only=True)
     total_battery_cost_naira = serializers.FloatField(read_only=True)
-    miscellaneous_cost = serializers.FloatField(read_only=True)
+    installer_cost = serializers.FloatField(read_only=True)
 
     def create(self, validated_data):
         calculated_values = calculate_quote(validated_data['electricity_spend'], validated_data['price_band'], validated_data['solar_load'], validated_data['battery_autonomy_hours'], validated_data['breakdowns'])

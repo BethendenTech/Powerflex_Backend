@@ -137,9 +137,15 @@ def calculate_system_components(total_load_kwh, coverage_percentage, components_
     total_cost_naira = total_panel_cost_naira + total_inverter_cost_naira + total_battery_cost_naira
 
     # Miscellaneous and profit margin
-    miscellaneous_cost = total_cost_naira * 0.20
-    total_cost_with_profit = total_cost_naira + miscellaneous_cost + (total_cost_naira * 0.20)
-
+    installer_cost = total_cost_naira * 0.1
+    cabling_cost = 0
+   
+    
+    total_cost_with_profit = total_cost_naira + installer_cost + (total_cost_naira * 0.2)
+    
+    vat = 7.5
+    total_vat = total_cost_with_profit * vat / 100
+   
     return {
         "total_load_kwh": total_load_kwh,
         "load_covered_by_solar": load_covered_by_solar,
@@ -155,11 +161,14 @@ def calculate_system_components(total_load_kwh, coverage_percentage, components_
         "total_battery_cost_naira": round(total_battery_cost_naira),
         "total_cost_usd": round(total_cost_usd, 2),
         "total_cost_naira": round(total_cost_naira),
-        "miscellaneous_cost": round(miscellaneous_cost),
+        "installer_cost": round(installer_cost),
         "total_cost_with_profit": round(total_cost_with_profit),
         "user_id": 1,
         "electricity_spend": round(electricity_spend, 2),
-        "price_band": price_band
+        "cabling_cost": round(cabling_cost),
+        "price_band": price_band,
+        "vat": vat,
+        "total_vat": total_vat,
     }
 
 # Function to calculate the financing details
