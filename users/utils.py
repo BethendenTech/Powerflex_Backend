@@ -137,11 +137,14 @@ def calculate_system_components(total_load_kwh, coverage_percentage, components_
     total_cost_naira = total_panel_cost_naira + total_inverter_cost_naira + total_battery_cost_naira
 
     # Miscellaneous and profit margin
-    installer_cost = total_cost_naira * 0.1
+    # calculate from back office
+    installer_cost = total_cost_naira * 15 / 100
     cabling_cost = 0
    
     
-    total_cost_with_profit = total_cost_naira + installer_cost + (total_cost_naira * 0.2)
+    # 20% profite margin calculate from back office
+    total_cost_with_profit = total_cost_naira + installer_cost + (total_cost_naira * 20/100)
+    
     
     vat = 7.5
     total_vat = total_cost_with_profit * vat / 100
