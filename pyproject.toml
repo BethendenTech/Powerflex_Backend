@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "PowerFlex"
+version = "0.1.0"
+description = "A Django project for PowerFlex."
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"  # Adjust to your Python version
+django = "^4.0"  # Update to your desired Django version
+requests = "^2.25.1"
+psycopg2 = "^2.9"  # PostgreSQL adapter
+django-cors-headers = "^3.11"  # CORS support for Django
+python-decouple = "^3.5"  # For environment variable management
+django-jazzmin = "^1.7"  # Admin interface customization
+djangorestframework = "^3.13"  # Django REST framework
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"  # Testing framework
+# Add additional dev dependencies if needed
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
