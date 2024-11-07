@@ -1,52 +1,51 @@
 {
-    "solar_panels": [
-      {
-        "name": "550W Solar Panel",
-        "unique_code": "SP550W2023",
-        "brand_name": "SunPower",
-        "model_name": "Power550",
-        "model_year": 2023,
-        "country_of_origin": "USA",
-        "capacity_w": 550,
-        "solar_panel_efficiency": 90,
-        "price_usd": 94.63,
-        "voc_v": 50.2,
-        "isc_a": 10.5
-      }
-    ],
-    "inverters": [
-      {
-        "name": "5kW Inverter",
-        "unique_code": "INV5KW2022",
-        "brand_name": "Invertron",
-        "model_name": "InvX5000",
-        "model_year": 2022,
-        "country_of_origin": "Germany",
-        "capacity_w": 5000,
-        "power_kw": 5,
-        "inverter_efficiency": 90,
-        "price_usd": 350,
-        "phase_type": "Single Phase",
-        "warranty_years": 5,
-        "voltage": 220
-      }
-    ],
-    "batteries": [
-      {
-        "name": "15kWh Battery",
-        "unique_code": "BAT15KWH2022",
-        "brand_name": "LithiumPro",
-        "model_name": "LithiumX15",
-        "model_year": 2022,
-        "country_of_origin": "Japan",
-        "capacity_kwh": 15,
-        "dod": 80,
-        "battery_efficiency": 90,
-        "price_usd": 195.78,
-        "firmware_version": "v2.0.1",
-        "voltage": 48,
-        "cycle_life": 5000
-      }
-    ]
-  }
-  
+  "solar_panels": [
+    {
+      "name": "550W Solar Panel",
+      "unique_code": "SP550W2023",
+      "brand_name": "SunPower",
+      "model_name": "Power550",
+      "model_year": 2023,
+      "country_of_origin": "USA",
+      "capacity_w": 550,
+      "solar_panel_efficiency": 90,
+      "price_usd": 94.63,
+      "voc_v": 50.2,
+      "isc_a": 10.5
+    }
+  ],
+  "inverters": [
+    {
+      "name": "5kW Inverter",
+      "unique_code": "INV5KW2022",
+      "brand_name": "Invertron",
+      "model_name": "InvX5000",
+      "model_year": 2022,
+      "country_of_origin": "Germany",
+      "capacity_w": 5000,
+      "power_kw": 5,
+      "inverter_efficiency": 90,
+      "price_usd": 350,
+      "phase_type": "Single Phase",
+      "warranty_years": 5,
+      "voltage": 220
+    }
+  ],
+  "batteries": [
+    {
+      "name": "15kWh Battery",
+      "unique_code": "BAT15KWH2022",
+      "brand_name": "LithiumPro",
+      "model_name": "LithiumX15",
+      "model_year": 2022,
+      "country_of_origin": "Japan",
+      "capacity_kwh": 15,
+      "dod": 80,
+      "battery_efficiency": 90,
+      "price_usd": 195.78,
+      "firmware_version": "v2.0.1",
+      "voltage": 48,
+      "cycle_life": 5000
+    }
+  ]
+}

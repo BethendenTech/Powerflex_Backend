@@ -31,7 +31,7 @@ class Quote(models.Model):
     total_panel_cost_naira = models.FloatField()
     total_inverter_cost_naira = models.FloatField()
     total_battery_cost_naira = models.FloatField()
-    miscellaneous_cost = models.FloatField()
+    installer_cost = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     price_band = models.CharField(max_length=255)
     electricity_spend = models.DecimalField(max_digits=10, decimal_places=2)

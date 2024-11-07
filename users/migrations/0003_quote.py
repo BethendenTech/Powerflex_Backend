@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('total_panel_cost_naira', models.FloatField()),
                 ('total_inverter_cost_naira', models.FloatField()),
                 ('total_battery_cost_naira', models.FloatField()),
-                ('miscellaneous_cost', models.FloatField()),
+                ('installer_cost', models.FloatField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='users.userdetail')),
             ],
