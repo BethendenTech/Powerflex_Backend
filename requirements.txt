@@ -1,6 +1,6 @@
 requests
 psycopg2
 django-cors-headers
-python-decouple
+python-dotenv
 django-jazzmin
 djangorestframework
