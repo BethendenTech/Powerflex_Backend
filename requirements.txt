@@ -6,3 +6,4 @@ python-dotenv
 django-jazzmin
 djangorestframework
 faker
+django-seed
