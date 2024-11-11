@@ -23,10 +23,15 @@ class Product(models.Model):
     model_year = models.TextField(blank=True, null=True)
     country_of_origin = models.TextField(blank=True, null=True)
     capacity_w = models.TextField(blank=True, null=True)
-    solar_panel_efficiency = models.TextField(blank=True, null=True)
     price_usd = models.TextField(blank=True, null=True)
     voc_v = models.TextField(blank=True, null=True)
     isc_a = models.TextField(blank=True, null=True)
+    efficiency = models.TextField(blank=True, null=True)
+    phase_type = models.TextField(blank=True, null=True)
+    warranty_years = models.TextField(blank=True, null=True)
+    voltage = models.TextField(blank=True, null=True)
+    dod = models.TextField(blank=True, null=True)
+    cycle_life = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
