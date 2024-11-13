@@ -93,6 +93,14 @@ def refine_total_load(base_consumption_kwh_per_day, appliance_consumption_kwh_pe
         return refined_daily_load_kwh
 
 
+# Function to select the best component based on minimum requirements
+def select_best_component(category_id, required_capacity):
+    suitable_components = Product.objects.filter(
+        category_id=category_id, capacity_w__gte=required_capacity
+    ).first()
+    return suitable_components
+
+
 # Function to calculate the system's components
 def calculate_system_components(
     total_load_kwh,
@@ -103,43 +111,62 @@ def calculate_system_components(
     price_band,
 ):
     load_covered_by_solar = total_load_kwh * (coverage_percentage / 100)
-
-    solar_panels = Product.objects.filter(category_id=1)
-    inverters = Product.objects.filter(category_id=2)
-    batteries = Product.objects.filter(category_id=3)
-
-    print(solar_panels[0].capacity_w)
-
-    # Solar panel calculations
     solar_energy_required = load_covered_by_solar / (1 - 0.20)  # 20% system losses
-    panel_capacity_w = float(solar_panels[0].capacity_w)
-    panel_output_per_day_kwh = (
-        panel_capacity_w * 5
-    ) / 1000  # Assuming 5 sun hours per day
+
+    # Selecting best solar panel
+    panel_required_output_kwh = (
+        solar_energy_required / 5
+    )  # Assuming 5 sun hours per day
+    best_panel = select_best_component(1, panel_required_output_kwh * 1000)
+    panel_output_per_day_kwh = (float(best_panel.capacity_w) * 5) / 1000
     number_of_panels = solar_energy_required / panel_output_per_day_kwh
 
-    # Inverter calculations
+    # Selecting best inverter
     inverter_input_w = load_covered_by_solar * 1000
-    inverter_size_w = inverter_input_w * 1.2  # Adding 20% safety margin
-    inverter_capacity_w = float(inverters[0].capacity_w)
-    number_of_inverters = inverter_size_w / inverter_capacity_w
+    inverter_size_w = inverter_input_w * 1.2
+    best_inverter = select_best_component(2, inverter_size_w)
+    number_of_inverters = inverter_size_w / float(best_inverter.capacity_w)
 
-    # Battery calculations based on customer input for battery autonomy in hours
-    battery_capacity_kwh = load_covered_by_solar * (
-        battery_autonomy_hours / 24
-    )  # Adjust for hours of autonomy
-    battery_efficiency = float(batteries[0].efficiency) / 100
-    battery_dod = float(batteries[0].dod) / 100
-    effective_battery_capacity_kwh = battery_capacity_kwh / (
-        battery_dod * battery_efficiency
-    )
-    battery_capacity_per_unit_kwh = float(batteries[0].capacity_w)
-    number_of_batteries = effective_battery_capacity_kwh / battery_capacity_per_unit_kwh
+    # Selecting best battery
+    battery_capacity_kwh = load_covered_by_solar * (battery_autonomy_hours / 24)
 
-    # Prices in USD from the components table
-    panel_price_usd = float(solar_panels[0].price_usd)
-    inverter_price_usd = float(inverters[0].price_usd)
-    battery_price_usd = float(batteries[0].price_usd)
+    if best_inverter.dod is not None:
+        battery_efficiency = float(best_inverter.efficiency) / 100
+    else:
+        battery_efficiency = 0
+
+    if best_inverter.dod is not None:
+        battery_dod = float(best_inverter.dod) / 100
+    else:
+        battery_dod = 0
+
+    if battery_dod != 0 and battery_efficiency != 0:
+        effective_battery_capacity_kwh = battery_capacity_kwh / (
+            battery_dod * battery_efficiency
+        )
+    else:
+        effective_battery_capacity_kwh = 0
+
+    best_battery = select_best_component(3, effective_battery_capacity_kwh)
+
+    if best_battery.capacity_w is not None:
+        number_of_batteries = effective_battery_capacity_kwh / float(
+            best_battery.capacity_w
+        )
+    else:
+        number_of_batteries = 0
+
+    # Check if the prices are not null or empty
+
+    if best_panel.price_usd and best_inverter.price_usd and best_battery.price_usd:
+        panel_price_usd = float(best_panel.price_usd)
+        inverter_price_usd = float(best_inverter.price_usd)
+        battery_price_usd = float(best_battery.price_usd)
+    else:
+        # Handle the case where any price is null or empty
+        panel_price_usd = 0.0  # or another default value
+        inverter_price_usd = 0.0  # or another default value
+        battery_price_usd = 0.0  # or another default value
 
     # Convert prices to Naira
     panel_price_naira = panel_price_usd * exchange_rate
@@ -184,9 +211,8 @@ def calculate_system_components(
         total_cost_naira + installer_cost + (total_cost_naira * profit_margin / 100)
     )
 
-
     if systemSetting and systemSetting.vat is not None:
-        vat = float(systemSetting.vat) 
+        vat = float(systemSetting.vat)
     else:
         vat = 7.5  # Default VAT rate if not found in settings
 
