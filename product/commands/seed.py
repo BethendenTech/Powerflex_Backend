@@ -16,7 +16,7 @@ class Command(BaseCommand):
         # Sample data for brands
         brands_data = [
             {"name": "SunPower", "description": "Leading solar technology company."},
-            {"name": "Gospower", "description": "Reliable power solutions."},
+            {"name": "GosPower", "description": "Reliable power solutions."},
             {"name": "tbc", "description": "To be confirmed."},
         ]
 
@@ -81,7 +81,7 @@ class Command(BaseCommand):
             },
             {
                 "category": "Inverters",
-                "brand": "Gospower",
+                "brand": "GosPower",
                 "name": "6kW Inverter",
                 "unique_code": "INV6KW2023",
                 "model_name": "GPEX-6KL1",
@@ -100,7 +100,7 @@ class Command(BaseCommand):
             },
             {
                 "category": "Batteries",
-                "brand": "Gospower",
+                "brand": "GosPower",
                 "name": "10kWh Lithium Battery",
                 "unique_code": "GPLB-48200M-2024",
                 "model_name": "GPLB-48200M",
