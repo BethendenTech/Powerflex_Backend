@@ -47,6 +47,7 @@ python manage.py createsuperuser
 
 ```bash
 python manage.py loaddata product/fixtures/category.json
+python manage.py loaddata product/fixtures/brand.json
 ```
 
 
