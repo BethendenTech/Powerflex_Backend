@@ -118,24 +118,39 @@ def calculate_system_components(
         solar_energy_required / 5
     )  # Assuming 5 sun hours per day
     best_panel = select_best_component(1, panel_required_output_kwh * 1000)
-    panel_output_per_day_kwh = (float(best_panel.capacity_w) * 5) / 1000
-    number_of_panels = solar_energy_required / panel_output_per_day_kwh
+
+    # Check if the capacity_w value is not null or empty
+    if best_panel and best_panel.capacity_w is not None:
+        panel_output_per_day_kwh = (float(best_panel.capacity_w) * 5) / 1000
+    else:
+        panel_output_per_day_kwh = 0.0  # or another default value
+
+    # Check if solar_energy_required and panel_output_per_day_kwh are valid
+    if solar_energy_required and panel_output_per_day_kwh:
+        number_of_panels = solar_energy_required / panel_output_per_day_kwh
+    else:
+        number_of_panels = 0  # or another default value
 
     # Selecting best inverter
     inverter_input_w = load_covered_by_solar * 1000
     inverter_size_w = inverter_input_w * 1.2
     best_inverter = select_best_component(2, inverter_size_w)
-    number_of_inverters = inverter_size_w / float(best_inverter.capacity_w)
+
+    # Check if the capacity_w value is not null or zero
+    if best_inverter and best_inverter.capacity_w is not None:
+        number_of_inverters = inverter_size_w / float(best_inverter.capacity_w)
+    else:
+        number_of_inverters = 0  # or another default value
 
     # Selecting best battery
     battery_capacity_kwh = load_covered_by_solar * (battery_autonomy_hours / 24)
 
-    if best_inverter.dod is not None:
+    if best_inverter and best_inverter.dod is not None:
         battery_efficiency = float(best_inverter.efficiency) / 100
     else:
         battery_efficiency = 0
 
-    if best_inverter.dod is not None:
+    if best_inverter and best_inverter.dod is not None:
         battery_dod = float(best_inverter.dod) / 100
     else:
         battery_dod = 0
@@ -149,7 +164,7 @@ def calculate_system_components(
 
     best_battery = select_best_component(3, effective_battery_capacity_kwh)
 
-    if best_battery.capacity_w is not None:
+    if best_battery and best_battery.capacity_w is not None:
         number_of_batteries = effective_battery_capacity_kwh / float(
             best_battery.capacity_w
         )
@@ -158,15 +173,20 @@ def calculate_system_components(
 
     # Check if the prices are not null or empty
 
-    if best_panel.price_usd and best_inverter.price_usd and best_battery.price_usd:
+    if best_panel and best_panel.price_usd is not None:
         panel_price_usd = float(best_panel.price_usd)
+    else:
+        panel_price_usd = 0
+
+    if best_inverter and best_inverter.price_usd is not None:
         inverter_price_usd = float(best_inverter.price_usd)
+    else:
+        inverter_price_usd = 0
+
+    if best_battery and best_battery.price_usd is not None:
         battery_price_usd = float(best_battery.price_usd)
     else:
-        # Handle the case where any price is null or empty
-        panel_price_usd = 0.0  # or another default value
-        inverter_price_usd = 0.0  # or another default value
-        battery_price_usd = 0.0  # or another default value
+        battery_price_usd = 0
 
     # Convert prices to Naira
     panel_price_naira = panel_price_usd * exchange_rate
