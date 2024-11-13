@@ -43,7 +43,6 @@ class QuoteSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         calculated_values = calculate_quote(validated_data['electricity_spend'], validated_data['price_band'], validated_data['solar_load'], validated_data['battery_autonomy_hours'], validated_data['breakdowns'])
-        # Quote.objects.create(**calculated_values)
         return calculated_values
 
 class CreateQuoteSerializer(serializers.Serializer):
