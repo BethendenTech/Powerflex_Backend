@@ -11,7 +11,7 @@
         "model": "product.brand",
         "pk": 2,
         "fields": {
-            "name": "Gospower",
+            "name": "GosPower",
             "description": "Reliable power solutions."
         }
     },
