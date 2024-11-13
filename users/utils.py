@@ -3,6 +3,7 @@ import json
 import requests
 from decimal import Decimal
 from product.models import Product
+from setting.models import Settings
 
 
 # Load exchange rate using ExchangeRate API
@@ -161,17 +162,34 @@ def calculate_system_components(
         total_panel_cost_naira + total_inverter_cost_naira + total_battery_cost_naira
     )
 
+    systemSetting = Settings.objects.first()
+
+    if systemSetting and systemSetting.profit_margin is not None:
+        profit_margin = float(systemSetting.profit_margin)
+    else:
+        profit_margin = 20
+
+    if systemSetting and systemSetting.installation_margin is not None:
+        installation_margin = float(systemSetting.installation_margin)
+    else:
+        installation_margin = 15
+
     # Miscellaneous and profit margin
     # calculate from back office
-    installer_cost = total_cost_naira * 15 / 100
+    installer_cost = total_cost_naira * installation_margin / 100
     cabling_cost = 0
 
     # 20% profite margin calculate from back office
     total_cost_with_profit = (
-        total_cost_naira + installer_cost + (total_cost_naira * 20 / 100)
+        total_cost_naira + installer_cost + (total_cost_naira * profit_margin / 100)
     )
 
-    vat = 7.5
+
+    if systemSetting and systemSetting.vat is not None:
+        vat = float(systemSetting.vat) 
+    else:
+        vat = 7.5  # Default VAT rate if not found in settings
+
     total_vat = total_cost_with_profit * vat / 100
 
     return {
