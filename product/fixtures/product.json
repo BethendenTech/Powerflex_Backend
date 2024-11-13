@@ -8,18 +8,13 @@
             "name": "350W Mono Panel",
             "unique_code": "SP350W2023",
             "model_name": "tbc",
-            "model_year": "None",
+            "model_year": null,
             "country_of_origin": "tbc",
             "capacity_w": 350,
             "price_usd": 46.53,
-            "voc_v": "None",
-            "isc_a": "None",
-            "efficiency": 90,
-            "phase_type": "None",
-            "warranty_years": "None",
-            "voltage": "None",
-            "dod": "None",
-            "cycle_life": "None"
+            "voc_v": null,
+            "isc_a": null,
+            "efficiency": 90
         }
     },
     {
@@ -31,18 +26,13 @@
             "name": "420W Half-Cut Panel",
             "unique_code": "SP420W2023",
             "model_name": "tbc",
-            "model_year": "None",
+            "model_year": null,
             "country_of_origin": "tbc",
             "capacity_w": 420,
             "price_usd": 59.13,
-            "voc_v": "None",
-            "isc_a": "None",
-            "efficiency": 90,
-            "phase_type": "None",
-            "warranty_years": "None",
-            "voltage": "None",
-            "dod": "None",
-            "cycle_life": "None"
+            "voc_v": null,
+            "isc_a": null,
+            "efficiency": 90
         }
     },
     {
@@ -60,40 +50,68 @@
             "price_usd": 73.01,
             "voc_v": 50.2,
             "isc_a": 10.5,
-            "efficiency": 90,
-            "phase_type": "None",
-            "warranty_years": "None",
-            "voltage": "None",
-            "dod": "None",
-            "cycle_life": "None"
+            "efficiency": 90
         }
     },
     {
         "model": "product.product",
         "pk": 4,
         "fields": {
-            "category": 2,
-            "brand": 2,
-            "name": "6kW Inverter",
-            "unique_code": "INV6KW2023",
-            "model_name": "GPEX-6KL1",
-            "model_year": "None",
-            "country_of_origin": "China",
-            "capacity_w": 6000,
-            "price_usd": 302.66,
-            "voc_v": "None",
-            "isc_a": "None",
-            "efficiency": 90,
-            "phase_type": "Single Phase",
-            "warranty_years": 5,
-            "voltage": 230,
-            "dod": "None",
-            "cycle_life": "None"
+            "category": 1,
+            "brand": 3,
+            "name": "600W Half-Cut Panel",
+            "unique_code": "SP600W2023",
+            "model_name": "tbc",
+            "model_year": null,
+            "country_of_origin": "tbc",
+            "capacity_w": 600,
+            "price_usd": 80.52,
+            "voc_v": null,
+            "isc_a": null,
+            "efficiency": 90
         }
     },
     {
         "model": "product.product",
         "pk": 5,
+        "fields": {
+            "category": 2,
+            "brand": 2,
+            "name": "6kW Inverter",
+            "unique_code": "INV6KW2023",
+            "model_name": "GPEX-6KL1",
+            "model_year": null,
+            "country_of_origin": "China",
+            "capacity_w": 6000,
+            "price_usd": 302.66,
+            "efficiency": 90,
+            "phase_type": "Single Phase",
+            "warranty_years": 5,
+            "voltage": 230
+        }
+    },
+    {
+        "model": "product.product",
+        "pk": 6,
+        "fields": {
+            "category": 2,
+            "brand": 2,
+            "name": "4kW Inverter",
+            "unique_code": "INV4KW2023",
+            "model_name": "GPEO-4KL1",
+            "model_year": 2023,
+            "country_of_origin": "Germany",
+            "capacity_w": 4000,
+            "price_usd": 221.59,
+            "efficiency": 90,
+            "phase_type": "Single Phase",
+            "warranty_years": 3,
+            "voltage": 220
+        }
+    },
+    {
+        "model": "product.product",
+        "pk": 7,
         "fields": {
             "category": 3,
             "brand": 2,
@@ -102,16 +120,31 @@
             "model_name": "GPLB-48200M",
             "model_year": 2024,
             "country_of_origin": "China",
-            "capacity_w": "None",
+            "capacity_w": 10.24,
             "price_usd": 1560.69,
-            "voc_v": "None",
-            "isc_a": "None",
             "efficiency": 98,
-            "phase_type": "None",
-            "warranty_years": "None",
             "voltage": 51.2,
             "dod": 80,
             "cycle_life": 5000
+        }
+    },
+    {
+        "model": "product.product",
+        "pk": 8,
+        "fields": {
+            "category": 3,
+            "brand": 3,
+            "name": "230Ah 12V Tubular Battery",
+            "unique_code": "BAT230AH12V2023",
+            "model_name": "tbc",
+            "model_year": null,
+            "country_of_origin": "tbc",
+            "capacity_w": 2.76,
+            "price_usd": 167.63,
+            "efficiency": 90,
+            "voltage": null,
+            "dod": 80,
+            "cycle_life": null
         }
     }
 ]
