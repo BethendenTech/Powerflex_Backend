@@ -43,8 +43,10 @@ python manage.py flush
 python manage.py createsuperuser
 ```
 
-## Clear Cache
+## Load data
 
 ```bash
-python manage.py clearcache
+python manage.py loaddata product/fixtures/category.json
 ```
+
+
