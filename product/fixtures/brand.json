@@ -1,0 +1,26 @@
+[
+    {
+        "model": "product.brand",
+        "pk": 1,
+        "fields": {
+            "name": "SunPower",
+            "description": "Leading solar technology company."
+        }
+    },
+    {
+        "model": "product.brand",
+        "pk": 2,
+        "fields": {
+            "name": "GosPower",
+            "description": "Reliable power solutions."
+        }
+    },
+    {
+        "model": "product.brand",
+        "pk": 3,
+        "fields": {
+            "name": "tbc",
+            "description": "To be confirmed."
+        }
+    }
+]
