@@ -30,7 +30,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'wkwog8cgsoo8004ssssk4kwg.142.93.253.117.sslip.io',
+    '142.93.253.117',
+    ]
 
 
 # Application definition
