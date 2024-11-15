@@ -12,18 +12,13 @@ ENV POSTGRES_PASSWORD=postgres
 ENV POSTGRES_DB=powerflex
 
 # Install Python dependencies
-COPY requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
 
 # Set up PostgreSQL
 RUN service postgresql start && \
     su postgres -c "psql -c \"CREATE USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';\"" && \
     su postgres -c "psql -c \"CREATE DATABASE $POSTGRES_DB OWNER $POSTGRES_USER;\"" && \
     su postgres -c "psql -c \"GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;\""
-
-# Copy your application code
-COPY . /app
-WORKDIR /app
 
 # Run a script to start both PostgreSQL and your app
 CMD service postgresql start && python manage.py
