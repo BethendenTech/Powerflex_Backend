@@ -1,12 +1,14 @@
 # users/serializers.py
 from rest_framework import serializers
 from .models import UserDetail, Quote
-from .utils import calculate_quote
+from .utils import calculate_quote, calculate_financing
+
 
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDetail
-        fields = ['name', 'email', 'phone_number']
+        fields = ["name", "email", "phone_number"]
+
 
 # class QuoteSerializer(serializers.Serializer):
 #     electricity_spend = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -17,11 +19,18 @@ class UserDetailSerializer(serializers.ModelSerializer):
 #         Quote.objects.create(**calculated_values)
 #         return calculated_values
 
+
 class QuoteSerializer(serializers.Serializer):
-    electricity_spend = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
+    electricity_spend = serializers.DecimalField(
+        max_digits=10, decimal_places=2, write_only=True
+    )
     price_band = serializers.CharField(max_length=255, write_only=True)
-    solar_load = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
-    battery_autonomy_hours = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
+    solar_load = serializers.DecimalField(
+        max_digits=10, decimal_places=2, write_only=True
+    )
+    battery_autonomy_hours = serializers.DecimalField(
+        max_digits=10, decimal_places=2, write_only=True
+    )
     breakdowns = serializers.JSONField(write_only=True)
     total_cost_naira = serializers.FloatField(read_only=True)
     total_cost_usd = serializers.FloatField(read_only=True)
@@ -42,14 +51,35 @@ class QuoteSerializer(serializers.Serializer):
     cabling_cost = serializers.FloatField(read_only=True)
 
     def create(self, validated_data):
-        calculated_values = calculate_quote(validated_data['electricity_spend'], validated_data['price_band'], validated_data['solar_load'], validated_data['battery_autonomy_hours'], validated_data['breakdowns'])
+        calculated_values = calculate_quote(
+            validated_data["electricity_spend"],
+            validated_data["price_band"],
+            validated_data["solar_load"],
+            validated_data["battery_autonomy_hours"],
+            validated_data["breakdowns"],
+        )
         return calculated_values
 
+
+class FinanceSerializer(serializers.Serializer):
+    total_cost_naira = serializers.FloatField(write_only=True)
+
+    def create(self, validated_data):
+        calculated_data = calculate_financing(validated_data["total_cost_naira"])
+        return calculated_data
+
+
 class CreateQuoteSerializer(serializers.Serializer):
-    electricity_spend = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
+    electricity_spend = serializers.DecimalField(
+        max_digits=10, decimal_places=2, write_only=True
+    )
     price_band = serializers.CharField(max_length=255, write_only=True)
-    solar_load = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
-    battery_autonomy_hours = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
+    solar_load = serializers.DecimalField(
+        max_digits=10, decimal_places=2, write_only=True
+    )
+    battery_autonomy_hours = serializers.DecimalField(
+        max_digits=10, decimal_places=2, write_only=True
+    )
     breakdowns = serializers.JSONField(write_only=True)
     total_cost_naira = serializers.FloatField(read_only=True)
     total_cost_usd = serializers.FloatField(read_only=True)
@@ -68,6 +98,12 @@ class CreateQuoteSerializer(serializers.Serializer):
     installer_cost = serializers.FloatField(read_only=True)
 
     def create(self, validated_data):
-        calculated_values = calculate_quote(validated_data['electricity_spend'], validated_data['price_band'], validated_data['solar_load'], validated_data['battery_autonomy_hours'], validated_data['breakdowns'])
+        calculated_values = calculate_quote(
+            validated_data["electricity_spend"],
+            validated_data["price_band"],
+            validated_data["solar_load"],
+            validated_data["battery_autonomy_hours"],
+            validated_data["breakdowns"],
+        )
         Quote.objects.create(**calculated_values)
         return calculated_values
