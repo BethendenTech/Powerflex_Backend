@@ -4,6 +4,7 @@ import requests
 from decimal import Decimal
 from product.models import Product
 from setting.models import Settings
+from django.db.models import Max
 
 
 # Load exchange rate using ExchangeRate API
@@ -95,10 +96,20 @@ def refine_total_load(base_consumption_kwh_per_day, appliance_consumption_kwh_pe
 
 # Function to select the best component based on minimum requirements
 def select_best_component(category_id, required_capacity):
-    suitable_components = Product.objects.filter(
+    # Try to find a suitable component with capacity >= required_capacity
+    suitable_component = Product.objects.filter(
         category_id=category_id, capacity_w__gte=required_capacity
     ).first()
-    return suitable_components
+
+    if suitable_component:
+        return suitable_component
+
+    # If no suitable component found, get the product with the maximum capacity
+    suitable_component = (
+        Product.objects.filter(category_id=category_id).order_by("-capacity_w").first()
+    )
+
+    return suitable_component
 
 
 # Function to calculate the system's components
@@ -110,34 +121,56 @@ def calculate_system_components(
     electricity_spend,
     price_band,
 ):
-    load_covered_by_solar = total_load_kwh * (coverage_percentage / 100)
-    solar_energy_required = load_covered_by_solar / (1 - 0.20)  # 20% system losses
+    print("\ncoverage_percentage:", coverage_percentage)
+    if coverage_percentage and coverage_percentage is not None:
+        load_covered_by_solar = total_load_kwh * (coverage_percentage / 100)
+        print("\load_covered_by_solar:", load_covered_by_solar)
+        solar_energy_required = load_covered_by_solar / (1 - 0.20)  # 20% system losses
+        print("\solar_energy_required:", solar_energy_required)
+    else:
+        load_covered_by_solar = 0.0
+        solar_energy_required = 0.0
 
     # Selecting best solar panel
     panel_required_output_kwh = (
         solar_energy_required / 5
     )  # Assuming 5 sun hours per day
+
+    print("\n panel_required_output_kwh:", panel_required_output_kwh * 1000)
     best_panel = select_best_component(1, panel_required_output_kwh * 1000)
+
+    print("\n best_panel:", best_panel)
 
     # Check if the capacity_w value is not null or empty
     if best_panel and best_panel.capacity_w is not None:
+        print("\n best_panel.capacity_w:", best_panel.capacity_w)
         panel_output_per_day_kwh = (float(best_panel.capacity_w) * 5) / 1000
     else:
         panel_output_per_day_kwh = 0.0  # or another default value
 
     # Check if solar_energy_required and panel_output_per_day_kwh are valid
+    print("\n solar_energy_required:", solar_energy_required)
+    print("\n panel_output_per_day_kwh:", panel_output_per_day_kwh)
+
     if solar_energy_required and panel_output_per_day_kwh:
         number_of_panels = solar_energy_required / panel_output_per_day_kwh
     else:
         number_of_panels = 0  # or another default value
 
+    print("\n number_of_panels:", number_of_panels)
+
     # Selecting best inverter
+    print("\n load_covered_by_solar:", load_covered_by_solar)
     inverter_input_w = load_covered_by_solar * 1000
+    print("\n inverter_input_w:", inverter_input_w)
     inverter_size_w = inverter_input_w * 1.2
     best_inverter = select_best_component(2, inverter_size_w)
+    print("\n inverter_size_w", inverter_size_w)
+    print("\n best_inverter", best_inverter)
 
     # Check if the capacity_w value is not null or zero
     if best_inverter and best_inverter.capacity_w is not None:
+        print("\n best_inverter.capacity_w:", best_inverter.capacity_w)
         number_of_inverters = inverter_size_w / float(best_inverter.capacity_w)
     else:
         number_of_inverters = 0  # or another default value
@@ -145,24 +178,17 @@ def calculate_system_components(
     # Selecting best battery
     battery_capacity_kwh = load_covered_by_solar * (battery_autonomy_hours / 24)
 
-    if best_inverter and best_inverter.dod is not None:
-        battery_efficiency = float(best_inverter.efficiency) / 100
-    else:
-        battery_efficiency = 0
+    print("\n battery_capacity_kwh:", battery_capacity_kwh)
 
-    if best_inverter and best_inverter.dod is not None:
-        battery_dod = float(best_inverter.dod) / 100
-    else:
-        battery_dod = 0
+    best_battery = select_best_component(3, battery_capacity_kwh)
 
-    if battery_dod != 0 and battery_efficiency != 0:
-        effective_battery_capacity_kwh = battery_capacity_kwh / (
-            battery_dod * battery_efficiency
-        )
-    else:
-        effective_battery_capacity_kwh = 0
+    print("\n best_battery", best_battery)
 
-    best_battery = select_best_component(3, effective_battery_capacity_kwh)
+    effective_battery_capacity_kwh = battery_capacity_kwh / (
+        float(best_battery.dod) / 100 * float(best_battery.efficiency) / 100
+    )
+
+    print("\n effective_battery_capacity_kwh:", effective_battery_capacity_kwh)
 
     if best_battery and best_battery.capacity_w is not None:
         number_of_batteries = effective_battery_capacity_kwh / float(
@@ -292,7 +318,11 @@ def calculate_savings_and_roi(
 ):
     monthly_savings = monthly_spend - Decimal(monthly_payment)
     total_savings = monthly_savings * loan_term_months
-    roi = (total_savings / total_cost_with_profit) * 100  # ROI in percentage
+    
+    if total_cost_with_profit != 0:
+        roi = (total_savings / total_cost_with_profit) * 100  # ROI in percentage
+    else:
+        roi = 0
 
     return {"monthly_savings": round(monthly_savings, 2), "roi": round(roi, 2)}
 
@@ -305,21 +335,17 @@ def calculate_quote(
     breakdowns=None,
 ):
 
-    # # Example customer inputs
-    # monthly_spend = float(input("Enter your monthly spend on electricity (in Naira): "))
-    # band_group = input("Enter your band group (A, B, or C): ").upper()
-
-    # Validate band group before proceeding
-    # if band_group not in ['A', 'B', 'C']:
-    #     print("Error: Please specify a valid band group (A, B, or C).")
-    #     exit()
-
-    coverage_percentage = float(coverage_percentage or 50)
-    battery_autonomy_hours = float(battery_autonomy_hours or 10)
+    coverage_percentage = float(coverage_percentage or 0)
+    battery_autonomy_hours = float(battery_autonomy_hours or 8)
 
     # Load exchange rate (USD to NGN)
     api_key = "8bd4f7fa32220748df03958d"  # ExchangeRate API key
     exchange_rate = get_exchange_rate(api_key, "USD", "NGN")
+
+    print(f"\n Monthly Spend: {monthly_spend}")
+    print(f"\n Band Group: {band_group}")
+    print(f"\n coverage_percentage: {coverage_percentage}")
+    print(f"\n battery_autonomy_hours: {battery_autonomy_hours}")
 
     # Base consumption calculation
     base_consumption_kwh_per_day = calculate_base_consumption(monthly_spend, band_group)
