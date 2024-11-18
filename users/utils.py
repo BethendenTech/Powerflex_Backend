@@ -318,7 +318,11 @@ def calculate_savings_and_roi(
 ):
     monthly_savings = monthly_spend - Decimal(monthly_payment)
     total_savings = monthly_savings * loan_term_months
-    roi = (total_savings / total_cost_with_profit) * 100  # ROI in percentage
+    
+    if total_cost_with_profit != 0:
+        roi = (total_savings / total_cost_with_profit) * 100  # ROI in percentage
+    else:
+        roi = 0
 
     return {"monthly_savings": round(monthly_savings, 2), "roi": round(roi, 2)}
 
@@ -331,7 +335,7 @@ def calculate_quote(
     breakdowns=None,
 ):
 
-    coverage_percentage = float(coverage_percentage or 25)
+    coverage_percentage = float(coverage_percentage or 0)
     battery_autonomy_hours = float(battery_autonomy_hours or 8)
 
     # Load exchange rate (USD to NGN)
