@@ -318,7 +318,7 @@ def calculate_savings_and_roi(
 ):
     monthly_savings = monthly_spend - Decimal(monthly_payment)
     total_savings = monthly_savings * loan_term_months
-    
+
     if total_cost_with_profit != 0:
         roi = (total_savings / total_cost_with_profit) * 100  # ROI in percentage
     else:
