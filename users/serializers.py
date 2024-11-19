@@ -37,7 +37,8 @@ class QuoteSerializer(serializers.Serializer):
     number_of_panels = serializers.IntegerField(read_only=True)
     number_of_inverters = serializers.IntegerField(read_only=True)
     number_of_batteries = serializers.IntegerField(read_only=True)
-    total_cost_with_profit = serializers.FloatField(read_only=True)
+    total_cost_with_profit_outright = serializers.FloatField(read_only=True)
+    total_cost_with_profit_financing = serializers.FloatField(read_only=True)
     total_load_kwh = serializers.FloatField(read_only=True)
     load_covered_by_solar = serializers.FloatField(read_only=True)
     total_panel_cost_usd = serializers.FloatField(read_only=True)
@@ -46,12 +47,13 @@ class QuoteSerializer(serializers.Serializer):
     total_panel_cost_naira = serializers.FloatField(read_only=True)
     total_inverter_cost_naira = serializers.FloatField(read_only=True)
     total_battery_cost_naira = serializers.FloatField(read_only=True)
-    installer_cost = serializers.FloatField(read_only=True)
+    installation_and_cabling = serializers.FloatField(read_only=True)
     vat = serializers.FloatField(read_only=True)
-    cabling_cost = serializers.FloatField(read_only=True)
     installer_commission = serializers.FloatField(read_only=True)
     installer_commission_amount = serializers.FloatField(read_only=True)
     total_equipments = serializers.FloatField(read_only=True)
+    total_vat_outright = serializers.FloatField(read_only=True)
+    total_vat_financing = serializers.FloatField(read_only=True)
 
     def create(self, validated_data):
         calculated_values = calculate_quote(
@@ -98,7 +100,7 @@ class CreateQuoteSerializer(serializers.Serializer):
     total_panel_cost_naira = serializers.FloatField(read_only=True)
     total_inverter_cost_naira = serializers.FloatField(read_only=True)
     total_battery_cost_naira = serializers.FloatField(read_only=True)
-    installer_cost = serializers.FloatField(read_only=True)
+    installation_and_cabling = serializers.FloatField(read_only=True)
 
     def create(self, validated_data):
         calculated_values = calculate_quote(

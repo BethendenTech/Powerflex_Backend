@@ -237,10 +237,14 @@ def calculate_system_components(
 
     systemSetting = Settings.objects.first()
 
-    if systemSetting and systemSetting.profit_margin is not None:
-        profit_margin = float(systemSetting.profit_margin)
+    if systemSetting and systemSetting.profit_margin_outright is not None:
+        profit_margin_outright = float(systemSetting.profit_margin_outright)
     else:
-        profit_margin = 20
+        profit_margin_outright = 30
+    if systemSetting and systemSetting.profit_margin_financing is not None:
+        profit_margin_financing = float(systemSetting.profit_margin_financing)
+    else:
+        profit_margin_financing = 20
 
     if systemSetting and systemSetting.installation_margin is not None:
         installation_margin = float(systemSetting.installation_margin)
@@ -253,17 +257,24 @@ def calculate_system_components(
         installer_commission = 2
 
     # Miscellaneous and profit margin
-    installer_cost = total_cost_naira * installation_margin / 100
+    installation_and_cabling = total_cost_naira * installation_margin / 100
     installer_commission_amount = total_cost_naira * installer_commission / 100
+    profit_margin_outright_amount = total_cost_naira * profit_margin_outright / 100
+    profit_margin_financing_amount = total_cost_naira * profit_margin_financing / 100
 
-    cabling_cost = 0
-
-    # 20% profite margin calculate from back office
-    total_cost_with_profit = (
+    # 20% profit margin calculate from back office
+    total_cost_with_profit_outright = (
         total_cost_naira
-        + installer_cost
+        + installation_and_cabling
         + installer_commission_amount
-        + (total_cost_naira * profit_margin / 100)
+        + profit_margin_outright_amount
+    )
+
+    total_cost_with_profit_financing = (
+        total_cost_naira
+        + installation_and_cabling
+        + installer_commission_amount
+        + profit_margin_financing_amount
     )
 
     if systemSetting and systemSetting.vat is not None:
@@ -271,7 +282,8 @@ def calculate_system_components(
     else:
         vat = 7.5  # Default VAT rate if not found in settings
 
-    total_vat = total_cost_with_profit * vat / 100
+    total_vat_outright = total_cost_with_profit_outright * vat / 100
+    total_vat_financing = total_cost_with_profit_financing * vat / 100
 
     return {
         "total_load_kwh": total_load_kwh,
@@ -290,16 +302,17 @@ def calculate_system_components(
         "total_battery_cost_naira": round(total_battery_cost_naira),
         "total_cost_usd": round(total_cost_usd, 2),
         "total_cost_naira": round(total_cost_naira),
-        "installer_cost": round(installer_cost),
-        "total_cost_with_profit": round(total_cost_with_profit),
+        "installation_and_cabling": round(installation_and_cabling),
+        "total_cost_with_profit_outright": round(total_cost_with_profit_outright),
+        "total_cost_with_profit_financing": round(total_cost_with_profit_financing),
         "user_id": 1,
         "electricity_spend": round(electricity_spend, 2),
-        "cabling_cost": round(cabling_cost),
         "installer_commission": round(installer_commission),
         "installer_commission_amount": round(installer_commission_amount),
         "price_band": price_band,
         "vat": vat,
-        "total_vat": total_vat,
+        "total_vat_outright": total_vat_outright,
+        "total_vat_financing": total_vat_financing,
     }
 
 
@@ -498,7 +511,7 @@ def calculate_quote(
         monthly_spend,
         financing_details["monthly_payment"],
         loan_term_months,
-        system_details["total_cost_with_profit"],
+        system_details["total_cost_with_profit_outright"],
     )
 
     # Output the results
@@ -522,7 +535,7 @@ def calculate_quote(
         f"Total System Cost (without profit): {system_details['total_cost_usd']} USD ({system_details['total_cost_naira']} Naira)"
     )
     print(
-        f"Total System Cost with Profit: {system_details['total_cost_with_profit']} Naira"
+        f"Total System Cost with Profit: {system_details['total_cost_with_profit_outright']} Naira"
     )
 
     # Financing information
