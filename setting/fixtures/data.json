@@ -5,7 +5,8 @@
         "fields": {
             "vat": 7.5,
             "profit_margin": 20,
-            "installation_margin": 15
+            "installation_margin": 15,
+            "installer_commission": 2
         }
     }
 ]

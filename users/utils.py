@@ -247,14 +247,23 @@ def calculate_system_components(
     else:
         installation_margin = 15
 
+    if systemSetting and systemSetting.installer_commission is not None:
+        installer_commission = float(systemSetting.installer_commission)
+    else:
+        installer_commission = 2
+
     # Miscellaneous and profit margin
-    # calculate from back office
     installer_cost = total_cost_naira * installation_margin / 100
+    installer_commission_amount = total_cost_naira * installer_commission / 100
+
     cabling_cost = 0
 
     # 20% profite margin calculate from back office
     total_cost_with_profit = (
-        total_cost_naira + installer_cost + (total_cost_naira * profit_margin / 100)
+        total_cost_naira
+        + installer_cost
+        + installer_commission_amount
+        + (total_cost_naira * profit_margin / 100)
     )
 
     if systemSetting and systemSetting.vat is not None:
@@ -286,6 +295,8 @@ def calculate_system_components(
         "user_id": 1,
         "electricity_spend": round(electricity_spend, 2),
         "cabling_cost": round(cabling_cost),
+        "installer_commission": round(installer_commission),
+        "installer_commission_amount": round(installer_commission_amount),
         "price_band": price_band,
         "vat": vat,
         "total_vat": total_vat,
@@ -318,7 +329,7 @@ def calculate_savings_and_roi(
 ):
     monthly_savings = monthly_spend - Decimal(monthly_payment)
     total_savings = monthly_savings * loan_term_months
-    
+
     if total_cost_with_profit != 0:
         roi = (total_savings / total_cost_with_profit) * 100  # ROI in percentage
     else:
