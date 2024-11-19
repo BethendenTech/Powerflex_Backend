@@ -247,9 +247,15 @@ def calculate_system_components(
     else:
         installation_margin = 15
 
+    if systemSetting and systemSetting.installer_commission is not None:
+        installer_commission = float(systemSetting.installer_commission)
+    else:
+        installer_commission = 2
+
     # Miscellaneous and profit margin
     # calculate from back office
     installer_cost = total_cost_naira * installation_margin / 100
+
     cabling_cost = 0
 
     # 20% profite margin calculate from back office
