@@ -5,7 +5,7 @@ Accept: application/json
 {
   "electricity_spend": 250000,
   "price_band": "A",
-  "solar_load": "0",
+  "solar_load": "1000",
   "battery_autonomy_hours": 0,
   "breakdowns": {
     "coffee_maker": true,

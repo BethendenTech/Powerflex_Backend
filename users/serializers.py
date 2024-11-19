@@ -49,6 +49,8 @@ class QuoteSerializer(serializers.Serializer):
     installer_cost = serializers.FloatField(read_only=True)
     vat = serializers.FloatField(read_only=True)
     cabling_cost = serializers.FloatField(read_only=True)
+    installer_commission = serializers.FloatField(read_only=True)
+    installer_commission_amount = serializers.FloatField(read_only=True)
 
     def create(self, validated_data):
         calculated_values = calculate_quote(

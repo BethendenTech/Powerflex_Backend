@@ -253,14 +253,17 @@ def calculate_system_components(
         installer_commission = 2
 
     # Miscellaneous and profit margin
-    # calculate from back office
     installer_cost = total_cost_naira * installation_margin / 100
+    installer_commission_amount = total_cost_naira * installer_commission / 100
 
     cabling_cost = 0
 
     # 20% profite margin calculate from back office
     total_cost_with_profit = (
-        total_cost_naira + installer_cost + (total_cost_naira * profit_margin / 100)
+        total_cost_naira
+        + installer_cost
+        + installer_commission_amount
+        + (total_cost_naira * profit_margin / 100)
     )
 
     if systemSetting and systemSetting.vat is not None:
@@ -292,6 +295,8 @@ def calculate_system_components(
         "user_id": 1,
         "electricity_spend": round(electricity_spend, 2),
         "cabling_cost": round(cabling_cost),
+        "installer_commission": round(installer_commission),
+        "installer_commission_amount": round(installer_commission_amount),
         "price_band": price_band,
         "vat": vat,
         "total_vat": total_vat,
