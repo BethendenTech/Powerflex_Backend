@@ -18,7 +18,8 @@ class SettingsAdmin(admin.ModelAdmin):
     form = SettingsForm
     list_display = [
         "vat",
-        "profit_margin",
+        "profit_margin_outright",
+        "profit_margin_financing",
         "installation_margin",
         "installer_commission",
     ]

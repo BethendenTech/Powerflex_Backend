@@ -4,7 +4,8 @@
         "pk": 1,
         "fields": {
             "vat": 7.5,
-            "profit_margin": 20,
+            "profit_margin_outright": 30,
+            "profit_margin_financing": 20,
             "installation_margin": 15,
             "installer_commission": 2
         }
