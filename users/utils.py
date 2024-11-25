@@ -133,8 +133,8 @@ def calculate_system_components(
 
     # Selecting best solar panel
     panel_required_output_kwh = (
-        solar_energy_required / 5
-    )  # Assuming 5 sun hours per day
+        solar_energy_required / 6
+    )  # Assuming 6 sun hours per day
 
     print("\n panel_required_output_kwh:", panel_required_output_kwh * 1000)
     best_panel = select_best_component(1, panel_required_output_kwh * 1000)
@@ -144,7 +144,7 @@ def calculate_system_components(
     # Check if the capacity_w value is not null or empty
     if best_panel and best_panel.capacity_w is not None:
         print("\n best_panel.capacity_w:", best_panel.capacity_w)
-        panel_output_per_day_kwh = (float(best_panel.capacity_w) * 5) / 1000
+        panel_output_per_day_kwh = (float(best_panel.capacity_w) * 6) / 1000
     else:
         panel_output_per_day_kwh = 0.0  # or another default value
 
