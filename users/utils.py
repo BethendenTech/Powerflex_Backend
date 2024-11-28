@@ -122,6 +122,7 @@ def calculate_system_components(
     price_band,
 ):
     print("\ncoverage_percentage:", coverage_percentage)
+
     if coverage_percentage and coverage_percentage is not None:
         load_covered_by_solar = total_load_kwh * (coverage_percentage / 100)
         print("\load_covered_by_solar:", load_covered_by_solar)
