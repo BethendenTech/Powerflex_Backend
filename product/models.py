@@ -32,6 +32,7 @@ class Product(models.Model):
     voltage = models.TextField(blank=True, null=True)
     dod = models.TextField(blank=True, null=True)
     cycle_life = models.TextField(blank=True, null=True)
+    supplier = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name
