@@ -232,6 +232,7 @@ def calculate_system_components(
         profit_margin_outright = float(systemSetting.profit_margin_outright)
     else:
         profit_margin_outright = 30
+
     if systemSetting and systemSetting.profit_margin_financing is not None:
         profit_margin_financing = float(systemSetting.profit_margin_financing)
     else:
@@ -357,8 +358,12 @@ def calculate_quote(
     # api_key = "8bd4f7fa32220748df03958d"  # ExchangeRate API key
     # exchange_rate = get_exchange_rate(api_key, "USD", "NGN")
 
-    # make form setting
-    exchange_rate = 1800
+    systemSetting = Settings.objects.first()
+
+    if systemSetting and systemSetting.exchange_rate is not None:
+        exchange_rate = float(systemSetting.exchange_rate)
+    else:
+        exchange_rate = 1800
 
     print(f"\n Monthly Spend: {monthly_spend}")
     print(f"\n Band Group: {band_group}")
