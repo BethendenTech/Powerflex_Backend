@@ -22,6 +22,7 @@ class SettingsAdmin(admin.ModelAdmin):
         "profit_margin_financing",
         "installation_margin",
         "installer_commission",
+        "exchange_rate",
     ]
 
     def has_add_permission(self, request):

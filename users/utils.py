@@ -354,8 +354,11 @@ def calculate_quote(
     battery_autonomy_hours = float(battery_autonomy_hours or 8)
 
     # Load exchange rate (USD to NGN)
-    api_key = "8bd4f7fa32220748df03958d"  # ExchangeRate API key
-    exchange_rate = get_exchange_rate(api_key, "USD", "NGN")
+    # api_key = "8bd4f7fa32220748df03958d"  # ExchangeRate API key
+    # exchange_rate = get_exchange_rate(api_key, "USD", "NGN")
+
+    # make form setting
+    exchange_rate = 1800
 
     print(f"\n Monthly Spend: {monthly_spend}")
     print(f"\n Band Group: {band_group}")
