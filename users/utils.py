@@ -215,26 +215,16 @@ def calculate_system_components(
     else:
         battery_price_usd = 0
 
-    # Convert prices to Naira
-    panel_price_naira = panel_price_usd * exchange_rate
-    inverter_price_naira = inverter_price_usd * exchange_rate
-    battery_price_naira = battery_price_usd * exchange_rate
-
     # Total cost calculations
     total_panel_cost_usd = number_of_panels * panel_price_usd
     total_inverter_cost_usd = number_of_inverters * inverter_price_usd
     total_battery_cost_usd = number_of_batteries * battery_price_usd
 
-    total_panel_cost_naira = number_of_panels * panel_price_naira
-    total_inverter_cost_naira = number_of_inverters * inverter_price_naira
-    total_battery_cost_naira = number_of_batteries * battery_price_naira
-
     total_cost_usd = (
         total_panel_cost_usd + total_inverter_cost_usd + total_battery_cost_usd
     )
-    total_cost_naira = (
-        total_panel_cost_naira + total_inverter_cost_naira + total_battery_cost_naira
-    )
+
+    total_cost_naira = total_cost_usd * exchange_rate
 
     systemSetting = Settings.objects.first()
 
@@ -298,9 +288,9 @@ def calculate_system_components(
         "total_panel_cost_usd": round(total_panel_cost_usd, 2),
         "total_inverter_cost_usd": round(total_inverter_cost_usd, 2),
         "total_battery_cost_usd": round(total_battery_cost_usd, 2),
-        "total_panel_cost_naira": round(total_panel_cost_naira),
-        "total_inverter_cost_naira": round(total_inverter_cost_naira),
-        "total_battery_cost_naira": round(total_battery_cost_naira),
+        "total_panel_cost_naira": round(total_panel_cost_usd * exchange_rate),
+        "total_inverter_cost_naira": round(total_inverter_cost_usd * exchange_rate),
+        "total_battery_cost_naira": round(total_battery_cost_usd * exchange_rate),
         "total_cost_usd": round(total_cost_usd, 2),
         "total_cost_naira": round(total_cost_naira),
         "installation_and_cabling": round(installation_and_cabling),
@@ -369,6 +359,7 @@ def calculate_quote(
 
     print(f"\n Monthly Spend: {monthly_spend}")
     print(f"\n Band Group: {band_group}")
+    print(f"\n Exchange Rate: {exchange_rate}")
     print(f"\n coverage_percentage: {coverage_percentage}")
     print(f"\n battery_autonomy_hours: {battery_autonomy_hours}")
 
