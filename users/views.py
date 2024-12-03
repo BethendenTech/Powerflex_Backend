@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,6 +13,7 @@ from .serializers import (
     CreateQuoteSerializer,
     CreateQuoteStep1Serializer,
 )
+from .utils import generate_quote_number
 
 
 @api_view(["POST"])
@@ -104,8 +106,13 @@ def create_quote(request):
 @api_view(["POST"])
 def create_quote_step_1(request):
     if request.method == "POST":
-
         user_id = request.data.get("user_id")
+        if not user_id:
+            return Response(
+                {"error": "user_id is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Fetch the user
         try:
             user = UserDetail.objects.get(id=user_id)
         except UserDetail.DoesNotExist:
@@ -113,10 +120,25 @@ def create_quote_step_1(request):
                 {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
+        # Initialize the serializer with the data and context (user)
         serializer = CreateQuoteStep1Serializer(
             data=request.data, context={"user": user}
         )
+
+        # Check if the data is valid
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # Save the quote object
+            quote = serializer.save()
+
+            response_data = {"quote_number": quote.quote_number}
+
+            print("response_data", response_data)
+            # Return the serialized quote data in the response
+            return Response(
+                {
+                    "message": "Quote created successfully.",
+                    "quote": response_data,  # Return serialized quote data
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

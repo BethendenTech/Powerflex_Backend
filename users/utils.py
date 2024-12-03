@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 import requests
 from decimal import Decimal
 from product.models import Product
@@ -551,3 +552,9 @@ def calculate_quote(
     )
     print(f"Customer ROI: {savings_and_roi['roi']} %")
     return system_details
+
+def generate_quote_number():
+    """
+    Generate a unique quote number using UUID.
+    """
+    return str(uuid.uuid4())[:8].upper()

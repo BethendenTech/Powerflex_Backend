@@ -19,7 +19,7 @@ class UserDetail(models.Model):
 
 class Quote(models.Model):
     user = models.ForeignKey(UserDetail, on_delete=models.CASCADE)
-    quote_number = models.CharField(blank=True, null=True)
+    quote_number = models.CharField(max_length=255, blank=True, null=True)
     electricity_spend = models.DecimalField(max_digits=10, decimal_places=2)
     price_band = models.CharField(max_length=255)
     total_cost_naira = models.FloatField(blank=True, null=True)

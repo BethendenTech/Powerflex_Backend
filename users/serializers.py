@@ -1,7 +1,7 @@
 # users/serializers.py
 from rest_framework import serializers
 from .models import UserDetail, Quote
-from .utils import calculate_quote, calculate_financing
+from .utils import calculate_quote, calculate_financing, generate_quote_number
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -122,8 +122,13 @@ class CreateQuoteStep1Serializer(serializers.Serializer):
         max_digits=10, decimal_places=2, write_only=True
     )
     price_band = serializers.CharField(max_length=255, write_only=True)
-
+    
     def create(self, validated_data):
         user = self.context["user"]
-        Quote.objects.create(user=user, **validated_data)
-        return validated_data
+        quote_number = validated_data.get(
+            "quote_number", generate_quote_number()
+        )  # Generate quote_number if not provided
+        quote = Quote.objects.create(
+            user=user, quote_number=quote_number, **validated_data
+        )
+        return quote
