@@ -1,6 +1,8 @@
 from django.db import models
+from product.models import Product
 
 # Create your models here.
+
 
 class UserDetail(models.Model):
     name = models.CharField(max_length=255)
@@ -9,14 +11,17 @@ class UserDetail(models.Model):
     phone_number = models.CharField(max_length=20)
 
     class Meta:
-        db_table = 'users'
+        db_table = "users"
 
     def __str__(self):
         return self.email
-    
+
 
 class Quote(models.Model):
     user = models.ForeignKey(UserDetail, on_delete=models.CASCADE)
+    quote_number = models.CharField()
+    electricity_spend = models.DecimalField(max_digits=10, decimal_places=2)
+    price_band = models.CharField(max_length=255)
     total_cost_naira = models.FloatField()
     total_cost_usd = models.FloatField()
     number_of_panels = models.IntegerField()
@@ -33,5 +38,7 @@ class Quote(models.Model):
     total_battery_cost_naira = models.FloatField()
     installer_cost = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
-    price_band = models.CharField(max_length=255)
-    electricity_spend = models.DecimalField(max_digits=10, decimal_places=2)
+
+class QuoteProduct(models.Model):
+    quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
