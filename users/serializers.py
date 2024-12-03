@@ -9,6 +9,9 @@ class UserDetailSerializer(serializers.ModelSerializer):
         model = UserDetail
         fields = ["name", "email", "phone_number"]
 
+    def validate_email(self, value):
+        return value
+
 
 # class QuoteSerializer(serializers.Serializer):
 #     electricity_spend = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -112,3 +115,15 @@ class CreateQuoteSerializer(serializers.Serializer):
         )
         Quote.objects.create(**calculated_values)
         return calculated_values
+
+
+class CreateQuoteStep1Serializer(serializers.Serializer):
+    electricity_spend = serializers.DecimalField(
+        max_digits=10, decimal_places=2, write_only=True
+    )
+    price_band = serializers.CharField(max_length=255, write_only=True)
+
+    def create(self, validated_data):
+        user = self.context["user"]
+        Quote.objects.create(user=user, **validated_data)
+        return validated_data

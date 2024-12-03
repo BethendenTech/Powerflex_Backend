@@ -10,31 +10,64 @@ from .serializers import (
     QuoteSerializer,
     FinanceSerializer,
     CreateQuoteSerializer,
+    CreateQuoteStep1Serializer,
 )
 
 
 @api_view(["POST"])
 def submit_user_details(request):
-    if request.method == "POST":
-        serializer = UserDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            # Assuming the unique user detail is 'email' or 'username'
-            email = serializer.validated_data.get("email")  # or 'username'
+    serializer = UserDetailSerializer(data=request.data)
+    if serializer.is_valid():
+        # If data is valid, attempt to create the user
+        user, created = UserDetail.objects.get_or_create(
+            email=serializer.validated_data["email"],
+            defaults=serializer.validated_data,
+        )
 
-            # Use get_or_create to either fetch the user or create a new one
-            user, created = UserDetail.objects.get_or_create(
-                email=email, defaults=serializer.validated_data
+        response_data = {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "phone_number": user.phone_number,
+        }
+
+        if created:
+            return Response(
+                {
+                    "message": "User created successfully.",
+                    "user": response_data,
+                },
+                status=status.HTTP_201_CREATED,
             )
-
-            if created:
+        else:
+            return Response(
+                {
+                    "message": "User already exists.",
+                    "user": response_data,
+                },
+                status=status.HTTP_200_OK,
+            )
+    else:
+        # Check if the email is the issue and return the existing user
+        email = request.data.get("email")
+        if email:
+            try:
+                user = UserDetail.objects.get(email=email)
+                response_data = {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "phone_number": user.phone_number,
+                }
                 return Response(
-                    serializer.data, status=status.HTTP_201_CREATED
-                )  # User created
-            else:
-                return Response(
-                    {"detail": "User already exists"}, status=status.HTTP_200_OK
-                )  # User already exists
-
+                    {
+                        "message": "User already exists.",
+                        "user": response_data,
+                    },
+                    status=status.HTTP_200_OK,
+                )
+            except UserDetail.DoesNotExist:
+                pass
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -62,6 +95,27 @@ def calculate_financing(request):
 def create_quote(request):
     if request.method == "POST":
         serializer = CreateQuoteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def create_quote_step_1(request):
+    if request.method == "POST":
+
+        user_id = request.data.get("user_id")
+        try:
+            user = UserDetail.objects.get(id=user_id)
+        except UserDetail.DoesNotExist:
+            return Response(
+                {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = CreateQuoteStep1Serializer(
+            data=request.data, context={"user": user}
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
