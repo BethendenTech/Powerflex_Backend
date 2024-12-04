@@ -14,6 +14,6 @@ class UserDetailAdmin(admin.ModelAdmin):
 
 @admin.register(Quote)
 class QuoteAdmin(admin.ModelAdmin):
-    list_display = ["user", "quote_number"]
-    list_filter = ["user", "quote_number"]
-    search_fields = ["user__name", "quote_number"]
+    list_display = ["user", "quote_number", "electricity_spend", "price_band"]
+    list_filter = ["user", "quote_number", "electricity_spend", "price_band"]
+    search_fields = ["user__name", "quote_number", "electricity_spend", "price_band"]
