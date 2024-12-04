@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(url='/admin/', permanent=True)),
     path('api/', include('users.urls')),
+    path('product/', include('product.urls')),
 ]

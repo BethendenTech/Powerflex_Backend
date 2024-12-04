@@ -1,0 +1,50 @@
+[
+    {
+        "model": "product.applianceCategory",
+        "pk": 1,
+        "fields": {
+            "name": "Kitchen Appliance",
+            "description": ""
+        }
+    },
+    {
+        "model": "product.applianceCategory",
+        "pk": 2,
+        "fields": {
+            "name": "Refrigeration",
+            "description": ""
+        }
+    },
+    {
+        "model": "product.applianceCategory",
+        "pk": 3,
+        "fields": {
+            "name": "Laundry",
+            "description": ""
+        }
+    },
+    {
+        "model": "product.applianceCategory",
+        "pk": 4,
+        "fields": {
+            "name": "Lighting",
+            "description": ""
+        }
+    },
+    {
+        "model": "product.applianceCategory",
+        "pk": 5,
+        "fields": {
+            "name": "HVAC",
+            "description": ""
+        }
+    },
+    {
+        "model": "product.applianceCategory",
+        "pk": 6,
+        "fields": {
+            "name": "Electrical Appliances",
+            "description": ""
+        }
+    }
+]

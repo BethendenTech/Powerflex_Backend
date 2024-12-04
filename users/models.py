@@ -22,6 +22,13 @@ class Quote(models.Model):
     quote_number = models.CharField(max_length=255, blank=True, null=True)
     electricity_spend = models.DecimalField(max_digits=10, decimal_places=2)
     price_band = models.CharField(max_length=255)
+
+    additional_info = models.BooleanField(null=True)
+    battery_autonomy_days = models.IntegerField(null=True)
+    battery_autonomy_hours = models.IntegerField(null=True)
+    battery_autonomy_hours_only = models.IntegerField(null=True)
+    solar_load = models.FloatField(null=True)
+
     total_cost_naira = models.FloatField(blank=True, null=True)
     total_cost_usd = models.FloatField(blank=True, null=True)
     number_of_panels = models.IntegerField(blank=True, null=True)
@@ -39,6 +46,8 @@ class Quote(models.Model):
     installer_cost = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
 class QuoteProduct(models.Model):
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.FloatField(null=True)

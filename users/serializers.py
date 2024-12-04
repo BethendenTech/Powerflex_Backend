@@ -122,7 +122,7 @@ class CreateQuoteStep1Serializer(serializers.Serializer):
         max_digits=10, decimal_places=2, write_only=True
     )
     price_band = serializers.CharField(max_length=255, write_only=True)
-    
+
     def create(self, validated_data):
         user = self.context["user"]
         quote_number = validated_data.get(
@@ -131,4 +131,30 @@ class CreateQuoteStep1Serializer(serializers.Serializer):
         quote = Quote.objects.create(
             user=user, quote_number=quote_number, **validated_data
         )
+        return quote
+
+
+class CreateQuoteStep2Serializer(serializers.Serializer):
+    additional_info = serializers.BooleanField(required=False, allow_null=True)
+    battery_autonomy_days = serializers.IntegerField(required=False, allow_null=True)
+    battery_autonomy_hours = serializers.IntegerField(required=False, allow_null=True)
+    battery_autonomy_hours_only = serializers.IntegerField(
+        required=False, allow_null=True
+    )
+    solar_load = serializers.FloatField(required=False, allow_null=True)
+
+    def create(self, validated_data):
+        quote_number = self.context["quote_number"]
+
+        # Retrieve the specific quote instance
+        try:
+            quote = Quote.objects.get(quote_number=quote_number)
+        except Quote.DoesNotExist:
+            raise serializers.ValidationError({"error": "Quote not found"})
+
+        # Update fields
+        for attr, value in validated_data.items():
+            setattr(quote, attr, value)
+        quote.save()  # Save the updated instance
+
         return quote

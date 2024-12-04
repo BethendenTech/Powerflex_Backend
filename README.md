@@ -50,6 +50,8 @@ python manage.py createsuperuser
 python manage.py loaddata product/fixtures/category.json
 python manage.py loaddata product/fixtures/brand.json
 python manage.py loaddata product/fixtures/product.json
+python manage.py loaddata product/fixtures/appliance_category.json
+python manage.py loaddata product/fixtures/appliance.json
 python manage.py loaddata setting/fixtures/data.json
 ```
 
