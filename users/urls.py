@@ -5,6 +5,7 @@ from .views import (
     calculate_quote,
     create_quote,
     calculate_financing,
+    create_quote_step_1,
 )
 
 urlpatterns = [
@@ -12,4 +13,5 @@ urlpatterns = [
     path("calculate-quote/", calculate_quote, name="calculate_quote"),
     path("calculate-financing/", calculate_financing, name="calculate_financing"),
     path("create-quote/", create_quote, name="create_quote"),
+    path("create-quote-step-1/", create_quote_step_1, name="create_quote_step_1"),
 ]

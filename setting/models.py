@@ -12,7 +12,7 @@ class Settings(models.Model):
         max_digits=5, decimal_places=2, default=0.00
     )
     exchange_rate = models.DecimalField(
-        max_digits=5, decimal_places=2, default=0.00
+        max_digits=10, decimal_places=2, default=0.00
     )
 
     def __str__(self):
