@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Brand,ApplianceCategory,Appliance
+from .models import Category, Product, Brand, ApplianceCategory, Appliance
 
 
 @admin.register(Category)
@@ -20,13 +20,15 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ["category", "brand"]
     search_fields = ["name", "category__name", "brand__name"]
 
+
 @admin.register(ApplianceCategory)
 class ApplianceCategoryAdmin(admin.ModelAdmin):
     list_display = ["name"]
-    search_fields = ["name"]    
+    search_fields = ["name"]
+
 
 @admin.register(Appliance)
 class ApplianceAdmin(admin.ModelAdmin):
-    list_display = ["name", "category",]
+    list_display = ["name", "category", "power_w"]
     list_filter = ["category"]
-    search_fields = ["name", "category__name"]
+    search_fields = ["name", "category__name", "power_w"]
