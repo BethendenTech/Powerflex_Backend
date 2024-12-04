@@ -41,3 +41,23 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ApplianceCategory(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Appliance(models.Model):
+    category = models.ForeignKey(
+        ApplianceCategory, on_delete=models.CASCADE, related_name="appliances"
+    )
+    name = models.CharField(max_length=100)
+    power_w = models.FloatField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
