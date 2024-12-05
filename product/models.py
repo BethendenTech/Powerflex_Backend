@@ -45,6 +45,7 @@ class Product(models.Model):
 
 class ApplianceCategory(models.Model):
     name = models.CharField(max_length=100)
+    type = models.CharField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):

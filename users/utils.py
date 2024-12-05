@@ -3,7 +3,7 @@ import json
 import uuid
 import requests
 from decimal import Decimal
-from product.models import Product
+from product.models import Product, Appliance
 from setting.models import Settings
 from django.db.models import Max
 
@@ -52,11 +52,24 @@ def calculate_base_consumption(monthly_spend, band_group):
 # Function to calculate appliance-based consumption (optional)
 def calculate_appliance_based_consumption(appliances):
     total_appliance_consumption_kwh = 0
-    for appliance in appliances:
-        power = appliance["power_w"]
-        hours_per_day = appliance["hours_per_day"]
-        quantity = appliance["quantity"]
-        total_appliance_consumption_kwh += (power * hours_per_day * quantity) / 1000
+
+    for key, value in appliances.items():
+        if value["id"]:
+            # Retrieve appliance data from the database
+            applianceData = Appliance.objects.filter(id=value["id"]).first()
+
+            if applianceData:  # Check if the appliance exists
+                power = applianceData.power_w  # Access the power attribute
+                hours_per_day = value["usage"]
+                quantity = value["quantity"]
+
+                # Calculate the consumption and add it to the total
+                total_appliance_consumption_kwh += (
+                    power * hours_per_day * quantity
+                ) / 1000
+            else:
+                print(f"Appliance with ID {value['id']} not found.")
+
     return total_appliance_consumption_kwh
 
 
@@ -377,6 +390,8 @@ def calculate_quote(
 
     breakdowns = breakdowns or {}
 
+    print(f"breakdowns = {breakdowns}")
+
     # Optional appliance data input
     appliances = [
         {
@@ -483,9 +498,10 @@ def calculate_quote(
         },
     ]
 
+
     # Calculate appliance-based consumption if provided
     appliance_consumption_kwh_per_day = calculate_appliance_based_consumption(
-        appliances
+        breakdowns
     )
 
     # Refine the total load
@@ -552,6 +568,7 @@ def calculate_quote(
     )
     print(f"Customer ROI: {savings_and_roi['roi']} %")
     return system_details
+
 
 def generate_quote_number():
     """
