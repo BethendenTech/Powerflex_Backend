@@ -1,5 +1,5 @@
 from django.db import models
-from product.models import Product
+from product.models import Product, Appliance
 
 # Create your models here.
 
@@ -45,6 +45,13 @@ class Quote(models.Model):
     total_battery_cost_naira = models.FloatField(blank=True, null=True)
     installer_cost = models.FloatField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class QuoteAppliance(models.Model):
+    quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
+    appliance = models.ForeignKey(Appliance, on_delete=models.CASCADE)
+    quantity = models.FloatField(null=True)
+    usage = models.FloatField(null=True)
 
 
 class QuoteProduct(models.Model):
