@@ -1,6 +1,7 @@
 # users/serializers.py
 from rest_framework import serializers
-from .models import UserDetail, Quote
+from .models import UserDetail, Quote, QuoteAppliance
+from product.models import Appliance
 from .utils import calculate_quote, calculate_financing, generate_quote_number
 
 
@@ -158,3 +159,56 @@ class CreateQuoteStep2Serializer(serializers.Serializer):
         quote.save()  # Save the updated instance
 
         return quote
+
+
+class CreateQuoteStep3Serializer(serializers.Serializer):
+    breakdowns = serializers.JSONField(write_only=True)
+
+    def create(self, validated_data):
+        quote_number = self.context["quote_number"]
+
+        # Retrieve the specific quote instance
+        try:
+            quote = Quote.objects.get(quote_number=quote_number)
+        except Quote.DoesNotExist:
+            raise serializers.ValidationError({"error": "Quote not found"})
+
+        # Update breakdowns (handling QuoteAppliance)
+        breakdowns = validated_data.get("breakdowns", [])
+        self.update_quote_appliances(quote, breakdowns)
+
+        return quote
+
+    def update_quote_appliances(self, quote, breakdowns):
+        """
+        Updates the QuoteAppliance instances associated with a quote.
+        """
+        # Clear existing appliances for this quote
+        QuoteAppliance.objects.filter(quote=quote).delete()
+
+        # Add updated appliances
+        for key, breakdown in breakdowns.items():
+            appliance_id = key
+            id = breakdown.get("id")
+            
+            if id:
+                quantity = breakdown.get("quantity")
+                usage = breakdown.get("usage")
+
+                if not appliance_id:
+                    raise serializers.ValidationError(
+                        {"error": "appliance_id is required in breakdowns"}
+                    )
+
+                # Retrieve the appliance instance
+                try:
+                    appliance = Appliance.objects.get(id=appliance_id)
+                except Appliance.DoesNotExist:
+                    raise serializers.ValidationError(
+                        {"error": f"Appliance with ID {appliance_id} not found"}
+                    )
+
+                # Create or update the QuoteAppliance instance
+                QuoteAppliance.objects.create(
+                    quote=quote, appliance=appliance, quantity=quantity, usage=usage
+                )

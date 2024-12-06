@@ -14,6 +14,7 @@ from .serializers import (
     CreateQuoteSerializer,
     CreateQuoteStep1Serializer,
     CreateQuoteStep2Serializer,
+    CreateQuoteStep3Serializer,
 )
 from .utils import generate_quote_number
 
@@ -159,6 +160,34 @@ def create_quote_step_2(request):
 
         # Initialize the serializer with data and context
         serializer = CreateQuoteStep2Serializer(
+            data=request.data, context={"quote_number": quote_number}
+        )
+
+        # Validate the data
+        if serializer.is_valid():
+            # Save the updated quote
+            serializer.save()
+            return Response(
+                {"message": "Quote updated successfully."}, status=status.HTTP_200_OK
+            )
+
+        # Return errors if validation fails
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def create_quote_step_3(request):
+    if request.method == "POST":
+        # Retrieve the quote_number from the request data
+        quote_number = request.data.get("quote_number")
+        if not quote_number:
+            return Response(
+                {"error": "quote_number is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Initialize the serializer with data and context
+        serializer = CreateQuoteStep3Serializer(
             data=request.data, context={"quote_number": quote_number}
         )
 
