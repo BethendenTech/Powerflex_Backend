@@ -54,9 +54,11 @@ def calculate_appliance_based_consumption(appliances):
     total_appliance_consumption_kwh = 0
 
     for key, value in appliances.items():
+        print(f"Appliance with ID = {key} value = {value}")
+
         if value["id"]:
             # Retrieve appliance data from the database
-            applianceData = Appliance.objects.filter(id=value["id"]).first()
+            applianceData = Appliance.objects.filter(id=key).first()
 
             if applianceData:  # Check if the appliance exists
                 power = applianceData.power_w  # Access the power attribute
@@ -68,7 +70,7 @@ def calculate_appliance_based_consumption(appliances):
                     power * hours_per_day * quantity
                 ) / 1000
             else:
-                print(f"Appliance with ID {value['id']} not found.")
+                print(f"Appliance with ID {key} not found.")
 
     return total_appliance_consumption_kwh
 
