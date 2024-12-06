@@ -3,7 +3,7 @@ import json
 import uuid
 import requests
 from decimal import Decimal
-from product.models import Product
+from product.models import Product, Appliance
 from setting.models import Settings
 from django.db.models import Max
 
@@ -52,11 +52,26 @@ def calculate_base_consumption(monthly_spend, band_group):
 # Function to calculate appliance-based consumption (optional)
 def calculate_appliance_based_consumption(appliances):
     total_appliance_consumption_kwh = 0
-    for appliance in appliances:
-        power = appliance["power_w"]
-        hours_per_day = appliance["hours_per_day"]
-        quantity = appliance["quantity"]
-        total_appliance_consumption_kwh += (power * hours_per_day * quantity) / 1000
+
+    for key, value in appliances.items():
+        print(f"Appliance with ID = {key} value = {value}")
+
+        if value["id"]:
+            # Retrieve appliance data from the database
+            applianceData = Appliance.objects.filter(id=key).first()
+
+            if applianceData:  # Check if the appliance exists
+                power = applianceData.power_w  # Access the power attribute
+                hours_per_day = value["usage"]
+                quantity = value["quantity"]
+
+                # Calculate the consumption and add it to the total
+                total_appliance_consumption_kwh += (
+                    power * hours_per_day * quantity
+                ) / 1000
+            else:
+                print(f"Appliance with ID {key} not found.")
+
     return total_appliance_consumption_kwh
 
 
@@ -377,115 +392,11 @@ def calculate_quote(
 
     breakdowns = breakdowns or {}
 
-    # Optional appliance data input
-    appliances = [
-        {
-            "name": "Lighting (LED bulb)",
-            "power_w": 8,
-            "hours_per_day": float(breakdowns.get("lighting_usage") or 0),
-            "quantity": int(breakdowns.get("lighting_quantity") or 0),
-        },
-        {
-            "name": "Fridge",
-            "power_w": 150,
-            "hours_per_day": float(breakdowns.get("fridge_usage") or 0),
-            "quantity": int(breakdowns.get("fridge_quantity") or 0),
-        },
-        {
-            "name": "Freezer",
-            "power_w": 250,
-            "hours_per_day": float(breakdowns.get("freezer_usage") or 0),
-            "quantity": int(breakdowns.get("freezer_quantity") or 0),
-        },
-        {
-            "name": "Microwave",
-            "power_w": 1200,
-            "hours_per_day": float(breakdowns.get("microwave_usage") or 0),
-            "quantity": int(breakdowns.get("microwave_quantity") or 0),
-        },
-        {
-            "name": "Oven",
-            "power_w": 2000,
-            "hours_per_day": float(breakdowns.get("oven_usage") or 0),
-            "quantity": int(breakdowns.get("oven_quantity") or 0),
-        },
-        {
-            "name": "Toaster",
-            "power_w": 800,
-            "hours_per_day": float(breakdowns.get("toaster_usage") or 0),
-            "quantity": int(breakdowns.get("toaster_quantity") or 0),
-        },
-        {
-            "name": "Blender",
-            "power_w": 500,
-            "hours_per_day": float(breakdowns.get("blender_usage") or 0),
-            "quantity": int(breakdowns.get("blender_quantity") or 0),
-        },
-        {
-            "name": "Coffee Maker",
-            "power_w": 600,
-            "hours_per_day": float(breakdowns.get("coffee_maker_usage") or 0),
-            "quantity": int(breakdowns.get("coffee_maker_quantity") or 0),
-        },
-        {
-            "name": "Kettle",
-            "power_w": 3000,
-            "hours_per_day": float(breakdowns.get("kettle_usage") or 0),
-            "quantity": int(breakdowns.get("kettle_quantity") or 0),
-        },
-        {
-            "name": "Laptop",
-            "power_w": 75,
-            "hours_per_day": float(breakdowns.get("laptop_usage") or 0),
-            "quantity": int(breakdowns.get("laptop_quantity") or 0),
-        },
-        {
-            "name": "Desktop Computer",
-            "power_w": 200,
-            "hours_per_day": float(breakdowns.get("desktop_usage") or 0),
-            "quantity": int(breakdowns.get("desktop_quantity") or 0),
-        },
-        {
-            "name": "Television",
-            "power_w": 300,
-            "hours_per_day": float(breakdowns.get("television_usage") or 0),
-            "quantity": int(breakdowns.get("television_quantity") or 0),
-        },
-        {
-            "name": "Water Heater",
-            "power_w": 1200,
-            "hours_per_day": float(breakdowns.get("water_heater_usage") or 0),
-            "quantity": int(breakdowns.get("water_heater_quantity") or 0),
-        },
-        {
-            "name": "Washing Machine",
-            "power_w": 500,
-            "hours_per_day": float(breakdowns.get("washing_machine_usage") or 0),
-            "quantity": int(breakdowns.get("washing_machine_quantity") or 0),
-        },
-        {
-            "name": "Dryer",
-            "power_w": 2160,
-            "hours_per_day": float(breakdowns.get("dryer_usage") or 0),
-            "quantity": int(breakdowns.get("dryer_quantity") or 0),
-        },
-        {
-            "name": "Electric Car",
-            "power_w": 6500,
-            "hours_per_day": float(breakdowns.get("electric_car_usage") or 0),
-            "quantity": int(breakdowns.get("electric_car_quantity") or 0),
-        },
-        {
-            "name": "Other Appliances",
-            "power_w": 500,
-            "hours_per_day": float(breakdowns.get("other_appliances_usage") or 0),
-            "quantity": int(breakdowns.get("other_appliances_quantity") or 0),
-        },
-    ]
+    print(f"breakdowns = {breakdowns}")
 
     # Calculate appliance-based consumption if provided
     appliance_consumption_kwh_per_day = calculate_appliance_based_consumption(
-        appliances
+        breakdowns
     )
 
     # Refine the total load
@@ -552,6 +463,7 @@ def calculate_quote(
     )
     print(f"Customer ROI: {savings_and_roi['roi']} %")
     return system_details
+
 
 def generate_quote_number():
     """

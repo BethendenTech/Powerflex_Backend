@@ -4,7 +4,8 @@
         "pk": 1,
         "fields": {
             "name": "Kitchen Appliance",
-            "description": ""
+            "description": "",
+            "type": "accordion"
         }
     },
     {
@@ -12,7 +13,8 @@
         "pk": 2,
         "fields": {
             "name": "Refrigeration",
-            "description": ""
+            "description": "",
+            "type": "accordion"
         }
     },
     {
@@ -20,7 +22,8 @@
         "pk": 3,
         "fields": {
             "name": "Laundry",
-            "description": ""
+            "description": "",
+            "type": "accordion"
         }
     },
     {
@@ -28,7 +31,8 @@
         "pk": 4,
         "fields": {
             "name": "Lighting",
-            "description": ""
+            "description": "",
+            "type": "accordion"
         }
     },
     {
@@ -36,7 +40,8 @@
         "pk": 5,
         "fields": {
             "name": "HVAC",
-            "description": ""
+            "description": "",
+            "type": "accordion"
         }
     },
     {
@@ -44,7 +49,8 @@
         "pk": 6,
         "fields": {
             "name": "Electrical Appliances",
-            "description": ""
+            "description": "",
+            "type": "accordion"
         }
     }
 ]

@@ -1,0 +1,8 @@
+POST {{baseUrl}}api/create-quote-step-3/ HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "quote_number": "17C56F50",
+  "breakdowns": {"1":{"id":true,"quantity":1,"usage":5},"2":{"id":true,"quantity":2,"usage":10},"3":{"id":false},"4":{"id":false},"5":{"id":false},"6":{"id":false},"7":{"id":false},"8":{"id":false},"9":{"id":false},"10":{"id":false},"11":{"id":false},"12":{"id":false},"13":{"id":false},"14":{"id":false},"15":{"id":false},"16":{"id":false},"17":{"id":false}}
+}

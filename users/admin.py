@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserDetail, Quote
+from .models import UserDetail, Quote, QuoteAppliance, QuoteProduct
 
 # Register your models here.
 
@@ -17,3 +17,17 @@ class QuoteAdmin(admin.ModelAdmin):
     list_display = ["user", "quote_number", "electricity_spend", "price_band"]
     list_filter = ["user", "quote_number", "electricity_spend", "price_band"]
     search_fields = ["user__name", "quote_number", "electricity_spend", "price_band"]
+
+
+@admin.register(QuoteAppliance)
+class QuoteApplianceAdmin(admin.ModelAdmin):
+    list_display = ["quote", "appliance", "quantity", "usage"]
+    list_filter = ["quote", "appliance", "quantity", "usage"]
+    search_fields = ["quote__quote_number", "appliance__name", "quantity", "usage"]
+
+
+@admin.register(QuoteProduct)
+class QuoteProductAdmin(admin.ModelAdmin):
+    list_display = ["quote", "product", "quantity"]
+    list_filter = ["quote", "product", "quantity"]
+    search_fields = ["quote__quote_number", "product__name", "quantity"]
