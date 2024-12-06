@@ -146,5 +146,81 @@
             "dod": 80,
             "cycle_life": null
         }
+    },
+    {
+        "model": "product.product",
+        "pk": 9,
+        "fields": {
+            "category": 3,
+            "brand": 4,
+            "name": "4.8kWh Lithium-ion Battery 48V",
+            "unique_code": "",
+            "model_name": "Growatt Hope 4.8L-C1",
+            "model_year": null,
+            "country_of_origin": "China",
+            "capacity_w": 4.8,
+            "price_usd": 1035.08,
+            "efficiency": 98,
+            "voltage": 48,
+            "dod": 93,
+            "cycle_life": null
+        }
+    },
+    {
+        "model": "product.product",
+        "pk": 10,
+        "fields": {
+            "category": 3,
+            "brand": 5,
+            "name": "5.12kWh Lithium-ion Battery",
+            "unique_code": "",
+            "model_name": "Pylontech UF5000 5.12kWh",
+            "model_year": null,
+            "country_of_origin": "China",
+            "capacity_w": 0,
+            "price_usd": 1207.59,
+            "efficiency": 98,
+            "voltage": 48,
+            "dod": 95,
+            "cycle_life": 6000
+        }
+    },
+    {
+        "model": "product.product",
+        "pk": 11,
+        "fields": {
+            "category": 3,
+            "brand": 6,
+            "name": "12.5kWh Lithium-ion Battery",
+            "unique_code": "",
+            "model_name": "",
+            "model_year": null,
+            "country_of_origin": "China",
+            "capacity_w": 12.5,
+            "price_usd": 1317,
+            "efficiency": 98,
+            "voltage": 48,
+            "dod": 80,
+            "cycle_life": 6000
+        }
+    },
+    {
+        "model": "product.product",
+        "pk": 12,
+        "fields": {
+            "category": 3,
+            "brand": 6,
+            "name": "15kWh Lithium-ion Battery",
+            "unique_code": "",
+            "model_name": "LBF48300",
+            "model_year": null,
+            "country_of_origin": "China",
+            "capacity_w": 15,
+            "price_usd": 1466,
+            "efficiency": 98,
+            "voltage": 48,
+            "dod": 80,
+            "cycle_life": 6000
+        }
     }
 ]
