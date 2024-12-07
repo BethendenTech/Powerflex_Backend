@@ -210,24 +210,30 @@ def calculate_system_components(
     else:
         battery_price_usd = 0
 
-    products = {
-        "best_panel": model_to_dict(best_panel),
-        "number_of_panels": number_of_panels,
-        "panel_price_usd": panel_price_usd,
-        "best_inverter": model_to_dict(best_inverter),
-        "number_of_inverters": number_of_inverters,
-        "inverter_price_usd": inverter_price_usd,
-        "best_battery": model_to_dict(best_battery),
-        "number_of_batteries": number_of_batteries,
-        "battery_price_usd": battery_price_usd,
-    }
-
-    print('products',products)
-
     # Total cost calculations
     total_panel_cost_usd = number_of_panels * panel_price_usd
     total_inverter_cost_usd = number_of_inverters * inverter_price_usd
     total_battery_cost_usd = number_of_batteries * battery_price_usd
+
+    products = {
+        "best_panel": model_to_dict(best_panel),
+        "best_inverter": model_to_dict(best_inverter),
+        "best_battery": model_to_dict(best_battery),
+        "number_of_panels": round(number_of_panels),
+        "number_of_inverters": round(number_of_inverters),
+        "number_of_batteries": round(number_of_batteries),
+        "panel_price_usd": round(panel_price_usd, 2),
+        "inverter_price_usd": round(inverter_price_usd, 2),
+        "battery_price_usd": round(battery_price_usd, 2),
+        "total_panel_cost_usd": round(total_panel_cost_usd, 2),
+        "total_inverter_cost_usd": round(total_inverter_cost_usd, 2),
+        "total_battery_cost_usd": round(total_battery_cost_usd, 2),
+        "total_panel_cost_naira": round(total_panel_cost_usd * exchange_rate),
+        "total_inverter_cost_naira": round(total_inverter_cost_usd * exchange_rate),
+        "total_battery_cost_naira": round(total_battery_cost_usd * exchange_rate),
+    }
+
+    print("products", products)
 
     total_cost_usd = (
         total_panel_cost_usd + total_inverter_cost_usd + total_battery_cost_usd
@@ -287,15 +293,6 @@ def calculate_system_components(
         "total_equipments": round(
             number_of_panels + number_of_inverters + number_of_batteries
         ),
-        "number_of_panels": round(number_of_panels),
-        "number_of_inverters": round(number_of_inverters),
-        "number_of_batteries": round(number_of_batteries),
-        "total_panel_cost_usd": round(total_panel_cost_usd, 2),
-        "total_inverter_cost_usd": round(total_inverter_cost_usd, 2),
-        "total_battery_cost_usd": round(total_battery_cost_usd, 2),
-        "total_panel_cost_naira": round(total_panel_cost_usd * exchange_rate),
-        "total_inverter_cost_naira": round(total_inverter_cost_usd * exchange_rate),
-        "total_battery_cost_naira": round(total_battery_cost_usd * exchange_rate),
         "total_cost_usd": round(total_cost_usd, 2),
         "total_cost_naira": round(total_cost_naira),
         "installation_and_cabling": round(installation_and_cabling),
@@ -407,7 +404,7 @@ def calculate_quote(
     )
 
     system_details["savings_and_roi"] = savings_and_roi
-    
+
     return system_details
 
 
