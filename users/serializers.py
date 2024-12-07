@@ -56,6 +56,8 @@ class QuoteSerializer(serializers.Serializer):
     installer_commission_amount = serializers.FloatField(read_only=True)
     total_equipments = serializers.FloatField(read_only=True)
     total_vat = serializers.FloatField(read_only=True)
+    savings_and_roi = serializers.JSONField(read_only=True)
+    products = serializers.JSONField(read_only=True)
     is_finance = serializers.BooleanField(write_only=True)
 
     def create(self, validated_data):

@@ -6,6 +6,7 @@ from decimal import Decimal
 from product.models import Product, Appliance
 from setting.models import Settings
 from django.db.models import Max
+from django.forms.models import model_to_dict
 
 
 # Load exchange rate using ExchangeRate API
@@ -209,6 +210,20 @@ def calculate_system_components(
     else:
         battery_price_usd = 0
 
+    products = {
+        "best_panel": model_to_dict(best_panel),
+        "number_of_panels": number_of_panels,
+        "panel_price_usd": panel_price_usd,
+        "best_inverter": model_to_dict(best_inverter),
+        "number_of_inverters": number_of_inverters,
+        "inverter_price_usd": inverter_price_usd,
+        "best_battery": model_to_dict(best_battery),
+        "number_of_batteries": number_of_batteries,
+        "battery_price_usd": battery_price_usd,
+    }
+
+    print('products',products)
+
     # Total cost calculations
     total_panel_cost_usd = number_of_panels * panel_price_usd
     total_inverter_cost_usd = number_of_inverters * inverter_price_usd
@@ -292,6 +307,7 @@ def calculate_system_components(
         "price_band": price_band,
         "vat": vat,
         "total_vat": total_vat,
+        "products": products,
     }
 
 
@@ -391,6 +407,7 @@ def calculate_quote(
     )
 
     system_details["savings_and_roi"] = savings_and_roi
+    
     return system_details
 
 
