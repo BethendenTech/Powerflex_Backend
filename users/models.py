@@ -29,6 +29,8 @@ class Quote(models.Model):
     battery_autonomy_hours_only = models.IntegerField(null=True)
     solar_load = models.FloatField(null=True)
 
+    is_finance = models.BooleanField(null=True)
+
     total_cost_naira = models.FloatField(blank=True, null=True)
     total_cost_usd = models.FloatField(blank=True, null=True)
     number_of_panels = models.IntegerField(blank=True, null=True)
