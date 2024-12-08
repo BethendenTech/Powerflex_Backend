@@ -185,28 +185,25 @@ class CreateQuoteStep3Serializer(serializers.Serializer):
         QuoteAppliance.objects.filter(quote=quote).delete()
 
         # Add updated appliances
-        for key, breakdown in breakdowns.items():
-            appliance_id = key
-            id = breakdown.get("id")
+        for value in breakdowns:
+            appliance_id = value.get("appliance_id")
+            usage = value.get("usage")
+            quantity = value.get("quantity")
 
-            if id:
-                quantity = breakdown.get("quantity")
-                usage = breakdown.get("usage")
-
-                if not appliance_id:
-                    raise serializers.ValidationError(
-                        {"error": "appliance_id is required in breakdowns"}
-                    )
-
-                # Retrieve the appliance instance
-                try:
-                    appliance = Appliance.objects.get(id=appliance_id)
-                except Appliance.DoesNotExist:
-                    raise serializers.ValidationError(
-                        {"error": f"Appliance with ID {appliance_id} not found"}
-                    )
-
-                # Create or update the QuoteAppliance instance
-                QuoteAppliance.objects.create(
-                    quote=quote, appliance=appliance, quantity=quantity, usage=usage
+            if not appliance_id:
+                raise serializers.ValidationError(
+                    {"error": "appliance_id is required in breakdowns"}
                 )
+
+            # Retrieve the appliance instance
+            try:
+                appliance = Appliance.objects.get(id=appliance_id)
+            except Appliance.DoesNotExist:
+                raise serializers.ValidationError(
+                    {"error": f"Appliance with ID {appliance_id} not found"}
+                )
+
+            # Create or update the QuoteAppliance instance
+            QuoteAppliance.objects.create(
+                quote=quote, appliance=appliance, quantity=quantity, usage=usage
+            )
