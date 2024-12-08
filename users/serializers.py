@@ -113,8 +113,16 @@ class CreateQuoteSerializer(serializers.Serializer):
             breakdown_list,
         )
 
-        # quote.save()
-        return calculated_values
+        # Set the calculated values to the quote instance
+        quote.total_load_kwh = calculated_values.get("total_load_kwh", 0)
+        quote.total_cost_naira = calculated_values.get("total_cost_naira", 0)
+        quote.total_cost_usd = calculated_values.get("total_cost_usd", 0)
+
+        # Save the updated quote instance
+        quote.save()
+
+        return quote
+
 
 class CreateQuoteStep1Serializer(serializers.Serializer):
     electricity_spend = serializers.DecimalField(

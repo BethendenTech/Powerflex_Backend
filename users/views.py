@@ -102,7 +102,14 @@ def create_quote(request):
         serializer = CreateQuoteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            # Return the serialized quote data in the response
+            return Response(
+                {
+                    "message": "Quote created successfully.",
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

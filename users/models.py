@@ -31,21 +31,10 @@ class Quote(models.Model):
 
     is_finance = models.BooleanField(null=True)
 
+    total_load_kwh = models.FloatField(blank=True, null=True)
     total_cost_naira = models.FloatField(blank=True, null=True)
     total_cost_usd = models.FloatField(blank=True, null=True)
-    number_of_panels = models.IntegerField(blank=True, null=True)
-    number_of_inverters = models.IntegerField(blank=True, null=True)
-    number_of_batteries = models.IntegerField(blank=True, null=True)
-    total_cost_with_profit = models.FloatField(blank=True, null=True)
-    total_load_kwh = models.FloatField(blank=True, null=True)
-    load_covered_by_solar = models.FloatField(blank=True, null=True)
-    total_panel_cost_usd = models.FloatField(blank=True, null=True)
-    total_inverter_cost_usd = models.FloatField(blank=True, null=True)
-    total_battery_cost_usd = models.FloatField(blank=True, null=True)
-    total_panel_cost_naira = models.FloatField(blank=True, null=True)
-    total_inverter_cost_naira = models.FloatField(blank=True, null=True)
-    total_battery_cost_naira = models.FloatField(blank=True, null=True)
-    installer_cost = models.FloatField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
 
