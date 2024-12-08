@@ -114,9 +114,17 @@ class CreateQuoteSerializer(serializers.Serializer):
         )
 
         # Set the calculated values to the quote instance
-        quote.total_load_kwh = calculated_values.get("total_load_kwh", 0)
+        quote.installation_and_cabling = calculated_values.get("installation_and_cabling", 0)
+        quote.installer_commission = calculated_values.get("installer_commission", 0)
+        quote.installer_commission_amount = calculated_values.get("installer_commission_amount", 0)
+        quote.load_covered_by_solar = calculated_values.get("load_covered_by_solar", 0)
         quote.total_cost_naira = calculated_values.get("total_cost_naira", 0)
         quote.total_cost_usd = calculated_values.get("total_cost_usd", 0)
+        quote.total_cost_with_profit = calculated_values.get("total_cost_with_profit", 0)
+        quote.total_equipments = calculated_values.get("total_equipments", 0)
+        quote.total_load_kwh = calculated_values.get("total_load_kwh", 0)
+        quote.total_vat = calculated_values.get("total_vat", 0)
+        quote.vat = calculated_values.get("vat", 0)
 
         # Save the updated quote instance
         quote.save()

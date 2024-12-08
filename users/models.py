@@ -31,9 +31,17 @@ class Quote(models.Model):
 
     is_finance = models.BooleanField(null=True)
 
-    total_load_kwh = models.FloatField(blank=True, null=True)
+    installation_and_cabling = models.FloatField(blank=True, null=True)
+    installer_commission = models.FloatField(blank=True, null=True)
+    installer_commission_amount = models.FloatField(blank=True, null=True)
+    load_covered_by_solar = models.FloatField(blank=True, null=True)
     total_cost_naira = models.FloatField(blank=True, null=True)
     total_cost_usd = models.FloatField(blank=True, null=True)
+    total_cost_with_profit = models.FloatField(blank=True, null=True)
+    total_equipments = models.FloatField(blank=True, null=True)
+    total_load_kwh = models.FloatField(blank=True, null=True)
+    total_vat = models.FloatField(blank=True, null=True)
+    vat = models.FloatField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
