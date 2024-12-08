@@ -55,11 +55,10 @@ def calculate_appliance_based_consumption(appliances):
     total_appliance_consumption_kwh = 0
 
     for key, value in appliances.items():
-        print(f"Appliance with ID = {key} value = {value}")
 
-        if value["id"]:
+        if value["appliance_id"]:
             # Retrieve appliance data from the database
-            applianceData = Appliance.objects.filter(id=key).first()
+            applianceData = Appliance.objects.filter(id=value["appliance_id"]).first()
 
             if applianceData:  # Check if the appliance exists
                 power = applianceData.power_w  # Access the power attribute
