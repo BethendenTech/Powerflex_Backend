@@ -54,24 +54,21 @@ def calculate_base_consumption(monthly_spend, band_group):
 def calculate_appliance_based_consumption(appliances):
     total_appliance_consumption_kwh = 0
 
-    for key, value in appliances.items():
-        print(f"Appliance with ID = {key} value = {value}")
+    for value in appliances:
+        appliance_id = value.get("appliance_id")
+        usage = value.get("usage")
+        quantity = value.get("quantity")
 
-        if value["id"]:
+        if appliance_id:
             # Retrieve appliance data from the database
-            applianceData = Appliance.objects.filter(id=key).first()
-
+            applianceData = Appliance.objects.filter(id=appliance_id).first()
             if applianceData:  # Check if the appliance exists
-                power = applianceData.power_w  # Access the power attribute
-                hours_per_day = value["usage"]
-                quantity = value["quantity"]
-
                 # Calculate the consumption and add it to the total
                 total_appliance_consumption_kwh += (
-                    power * hours_per_day * quantity
+                    applianceData.power_w * usage * quantity
                 ) / 1000
             else:
-                print(f"Appliance with ID {key} not found.")
+                print(f"Appliance with ID {appliance_id} not found.")
 
     return total_appliance_consumption_kwh
 

@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import UserDetail, Quote, QuoteAppliance, QuoteProduct
+from .models import (
+    UserDetail,
+    Quote,
+    QuoteAppliance,
+    QuoteProduct,
+    QuoteBusiness,
+    QuoteIndividual,
+)
 
 # Register your models here.
 
@@ -31,3 +38,17 @@ class QuoteProductAdmin(admin.ModelAdmin):
     list_display = ["quote", "product", "quantity"]
     list_filter = ["quote", "product", "quantity"]
     search_fields = ["quote__quote_number", "product__name", "quantity"]
+
+
+@admin.register(QuoteBusiness)
+class QuoteBusinessAdmin(admin.ModelAdmin):
+    list_display = ["quote", "first_name", "last_name"]
+    list_filter = ["quote", "first_name", "last_name"]
+    search_fields = ["quote__quote_number", "first_name", "last_name"]
+
+
+@admin.register(QuoteIndividual)
+class QuoteIndividualAdmin(admin.ModelAdmin):
+    list_display = ["quote", "first_name", "last_name"]
+    list_filter = ["quote", "first_name", "last_name"]
+    search_fields = ["quote__quote_number", "first_name", "last_name"]

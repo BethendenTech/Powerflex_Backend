@@ -81,43 +81,55 @@ class FinanceSerializer(serializers.Serializer):
 
 
 class CreateQuoteSerializer(serializers.Serializer):
-    electricity_spend = serializers.DecimalField(
-        max_digits=10, decimal_places=2, write_only=True
-    )
-    price_band = serializers.CharField(max_length=255, write_only=True)
-    solar_load = serializers.DecimalField(
-        max_digits=10, decimal_places=2, write_only=True
-    )
-    battery_autonomy_hours = serializers.DecimalField(
-        max_digits=10, decimal_places=2, write_only=True
-    )
-    breakdowns = serializers.JSONField(write_only=True)
-    total_cost_naira = serializers.FloatField(read_only=True)
-    total_cost_usd = serializers.FloatField(read_only=True)
-    number_of_panels = serializers.IntegerField(read_only=True)
-    number_of_inverters = serializers.IntegerField(read_only=True)
-    number_of_batteries = serializers.IntegerField(read_only=True)
-    total_cost_with_profit = serializers.FloatField(read_only=True)
-    total_load_kwh = serializers.FloatField(read_only=True)
-    load_covered_by_solar = serializers.FloatField(read_only=True)
-    total_panel_cost_usd = serializers.FloatField(read_only=True)
-    total_inverter_cost_usd = serializers.FloatField(read_only=True)
-    total_battery_cost_usd = serializers.FloatField(read_only=True)
-    total_panel_cost_naira = serializers.FloatField(read_only=True)
-    total_inverter_cost_naira = serializers.FloatField(read_only=True)
-    total_battery_cost_naira = serializers.FloatField(read_only=True)
-    installation_and_cabling = serializers.FloatField(read_only=True)
+    quote_number = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
+        quote_number = validated_data["quote_number"]
+
+        # Retrieve the specific quote instance
+        try:
+            quote = Quote.objects.get(quote_number=quote_number)
+        except Quote.DoesNotExist:
+            raise serializers.ValidationError({"error": "Quote not found"})
+
+        # Retrieve the related QuoteAppliance objects
+        breakdowns = QuoteAppliance.objects.filter(quote=quote)
+
+        # Ensure breakdowns is in the format calculate_quote expects
+        breakdown_list = [
+            {
+                "appliance_id": appliance.appliance.id,
+                "quantity": appliance.quantity,
+                "usage": appliance.usage,
+            }
+            for appliance in breakdowns
+        ]
+
         calculated_values = calculate_quote(
-            validated_data["electricity_spend"],
-            validated_data["price_band"],
-            validated_data["solar_load"],
-            validated_data["battery_autonomy_hours"],
-            validated_data["breakdowns"],
+            quote.electricity_spend,
+            quote.price_band,
+            quote.solar_load,
+            quote.battery_autonomy_hours,
+            breakdown_list,
         )
-        Quote.objects.create(**calculated_values)
-        return calculated_values
+
+        # Set the calculated values to the quote instance
+        quote.installation_and_cabling = calculated_values.get("installation_and_cabling", 0)
+        quote.installer_commission = calculated_values.get("installer_commission", 0)
+        quote.installer_commission_amount = calculated_values.get("installer_commission_amount", 0)
+        quote.load_covered_by_solar = calculated_values.get("load_covered_by_solar", 0)
+        quote.total_cost_naira = calculated_values.get("total_cost_naira", 0)
+        quote.total_cost_usd = calculated_values.get("total_cost_usd", 0)
+        quote.total_cost_with_profit = calculated_values.get("total_cost_with_profit", 0)
+        quote.total_equipments = calculated_values.get("total_equipments", 0)
+        quote.total_load_kwh = calculated_values.get("total_load_kwh", 0)
+        quote.total_vat = calculated_values.get("total_vat", 0)
+        quote.vat = calculated_values.get("vat", 0)
+
+        # Save the updated quote instance
+        quote.save()
+
+        return quote
 
 
 class CreateQuoteStep1Serializer(serializers.Serializer):
@@ -189,28 +201,25 @@ class CreateQuoteStep3Serializer(serializers.Serializer):
         QuoteAppliance.objects.filter(quote=quote).delete()
 
         # Add updated appliances
-        for key, breakdown in breakdowns.items():
-            appliance_id = key
-            id = breakdown.get("id")
-            
-            if id:
-                quantity = breakdown.get("quantity")
-                usage = breakdown.get("usage")
+        for value in breakdowns:
+            appliance_id = value.get("appliance_id")
+            usage = value.get("usage")
+            quantity = value.get("quantity")
 
-                if not appliance_id:
-                    raise serializers.ValidationError(
-                        {"error": "appliance_id is required in breakdowns"}
-                    )
-
-                # Retrieve the appliance instance
-                try:
-                    appliance = Appliance.objects.get(id=appliance_id)
-                except Appliance.DoesNotExist:
-                    raise serializers.ValidationError(
-                        {"error": f"Appliance with ID {appliance_id} not found"}
-                    )
-
-                # Create or update the QuoteAppliance instance
-                QuoteAppliance.objects.create(
-                    quote=quote, appliance=appliance, quantity=quantity, usage=usage
+            if not appliance_id:
+                raise serializers.ValidationError(
+                    {"error": "appliance_id is required in breakdowns"}
                 )
+
+            # Retrieve the appliance instance
+            try:
+                appliance = Appliance.objects.get(id=appliance_id)
+            except Appliance.DoesNotExist:
+                raise serializers.ValidationError(
+                    {"error": f"Appliance with ID {appliance_id} not found"}
+                )
+
+            # Create or update the QuoteAppliance instance
+            QuoteAppliance.objects.create(
+                quote=quote, appliance=appliance, quantity=quantity, usage=usage
+            )
