@@ -1,6 +1,6 @@
 # users/serializers.py
 from rest_framework import serializers
-from .models import UserDetail, Quote, QuoteAppliance
+from .models import UserDetail, Quote, QuoteAppliance, QuoteBusiness
 from product.models import Appliance
 from .utils import calculate_quote, calculate_financing, generate_quote_number
 
@@ -114,13 +114,19 @@ class CreateQuoteSerializer(serializers.Serializer):
         )
 
         # Set the calculated values to the quote instance
-        quote.installation_and_cabling = calculated_values.get("installation_and_cabling", 0)
+        quote.installation_and_cabling = calculated_values.get(
+            "installation_and_cabling", 0
+        )
         quote.installer_commission = calculated_values.get("installer_commission", 0)
-        quote.installer_commission_amount = calculated_values.get("installer_commission_amount", 0)
+        quote.installer_commission_amount = calculated_values.get(
+            "installer_commission_amount", 0
+        )
         quote.load_covered_by_solar = calculated_values.get("load_covered_by_solar", 0)
         quote.total_cost_naira = calculated_values.get("total_cost_naira", 0)
         quote.total_cost_usd = calculated_values.get("total_cost_usd", 0)
-        quote.total_cost_with_profit = calculated_values.get("total_cost_with_profit", 0)
+        quote.total_cost_with_profit = calculated_values.get(
+            "total_cost_with_profit", 0
+        )
         quote.total_equipments = calculated_values.get("total_equipments", 0)
         quote.total_load_kwh = calculated_values.get("total_load_kwh", 0)
         quote.total_vat = calculated_values.get("total_vat", 0)
@@ -223,3 +229,40 @@ class CreateQuoteStep3Serializer(serializers.Serializer):
             QuoteAppliance.objects.create(
                 quote=quote, appliance=appliance, quantity=quantity, usage=usage
             )
+
+
+class BusinessFormSerializer(serializers.Serializer):
+    quote_number = serializers.CharField(write_only=True)
+    role = serializers.CharField(write_only=True)
+    other_role = serializers.CharField(read_only=True)
+    first_name = serializers.CharField(write_only=True)
+    last_name = serializers.CharField(write_only=True)
+    phone_number = serializers.CharField(write_only=True)
+    business_name = serializers.CharField(write_only=True)
+    house_number = serializers.CharField(write_only=True)
+    street_name = serializers.CharField(write_only=True)
+    nearest_bus_stop = serializers.CharField(write_only=True)
+    state = serializers.CharField(write_only=True)
+    lga = serializers.CharField(write_only=True)
+    bvn = serializers.CharField(write_only=True)
+    applicant_id_card = serializers.CharField(read_only=True)
+    company_registration_document = serializers.CharField(read_only=True)
+    bank_statements = serializers.CharField(read_only=True)
+    recent_utility_bill = serializers.CharField(read_only=True)
+
+    def create(self, validated_data):
+
+        # Extract the quote_number
+        quote_number = validated_data.pop("quote_number")
+
+        quote = Quote.objects.get(
+            quote_number=quote_number,
+        )
+
+        # Update or create QuoteBusiness record using the remaining fields
+        quote_business, created = QuoteBusiness.objects.update_or_create(
+            quote=quote,
+            defaults=validated_data,
+        )
+
+        return quote_business

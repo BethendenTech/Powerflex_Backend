@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import UserDetail
-from .models import Quote
+from .models import Quote, QuoteBusiness
 from .serializers import (
     UserDetailSerializer,
     QuoteSerializer,
@@ -15,6 +15,7 @@ from .serializers import (
     CreateQuoteStep1Serializer,
     CreateQuoteStep2Serializer,
     CreateQuoteStep3Serializer,
+    BusinessFormSerializer,
 )
 from .utils import generate_quote_number
 
@@ -142,7 +143,6 @@ def create_quote_step_1(request):
 
             response_data = {"quote_number": quote.quote_number}
 
-            print("response_data", response_data)
             # Return the serialized quote data in the response
             return Response(
                 {
@@ -207,4 +207,30 @@ def create_quote_step_3(request):
             )
 
         # Return errors if validation fails
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def apply_business(request):
+    if request.method == "POST":
+      
+        # Initialize the serializer with data and context
+        serializer = BusinessFormSerializer(
+            data=request.data
+        )
+
+        # Validate the data
+        if serializer.is_valid():
+            try:
+                # Save the updated quote
+                serializer.save()
+                return Response(
+                    {"message": "Quote updated successfully."},
+                    status=status.HTTP_200_OK,
+                )
+            except Exception as e:
+                return Response(
+                    {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
