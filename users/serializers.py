@@ -1,6 +1,6 @@
 # users/serializers.py
 from rest_framework import serializers
-from .models import UserDetail, Quote, QuoteAppliance, QuoteBusiness
+from .models import UserDetail, Quote, QuoteAppliance, QuoteBusiness, QuoteIndividual
 from product.models import Appliance
 from .utils import calculate_quote, calculate_financing, generate_quote_number
 
@@ -261,6 +261,41 @@ class BusinessFormSerializer(serializers.Serializer):
 
         # Update or create QuoteBusiness record using the remaining fields
         quote_business, created = QuoteBusiness.objects.update_or_create(
+            quote=quote,
+            defaults=validated_data,
+        )
+
+        return quote_business
+
+
+class IndividualFormSerializer(serializers.Serializer):
+    quote_number = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(null=True)
+    last_name = serializers.CharField(null=True)
+    phone_number = serializers.CharField(null=True)
+    house_number = serializers.CharField(null=True)
+    street_name = serializers.CharField(null=True)
+    landmark = serializers.CharField(null=True)
+    nearest_bus_stop = serializers.CharField(null=True)
+    town = serializers.CharField(null=True)
+    city = serializers.CharField(null=True)
+    state = serializers.CharField(null=True)
+    lga = serializers.CharField(null=True)
+    occupation = serializers.CharField(null=True)
+    work_address = serializers.CharField(null=True)
+    how_heard_about = serializers.CharField(null=True)
+
+    def create(self, validated_data):
+
+        # Extract the quote_number
+        quote_number = validated_data.pop("quote_number")
+
+        quote = Quote.objects.get(
+            quote_number=quote_number,
+        )
+
+        # Update or create QuoteIndividual record using the remaining fields
+        quote_business, created = QuoteIndividual.objects.update_or_create(
             quote=quote,
             defaults=validated_data,
         )
