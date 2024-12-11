@@ -19,10 +19,10 @@ class UserDetail(models.Model):
 
 class Quote(models.Model):
     class Status(models.TextChoices):
-        PENDING = "Pending", "Pending"
-        PAID = "Paid", "Paid"
-        CANCELLED = "Cancelled", "Cancelled"
-        APPROVED = "Approved", "Approved"
+        PENDING = "pending", "Pending"
+        PAID = "paid", "Paid"
+        CANCELLED = "cancelled", "Cancelled"
+        APPROVED = "approved", "Approved"
 
     user = models.ForeignKey(UserDetail, on_delete=models.CASCADE)
     quote_number = models.CharField(max_length=255, blank=True, null=True)

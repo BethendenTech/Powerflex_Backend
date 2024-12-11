@@ -183,6 +183,28 @@ class CreateQuoteSerializer(serializers.Serializer):
         return quote
 
 
+class CreatePaymentQuoteSerializer(serializers.Serializer):
+    quote_number = serializers.CharField(write_only=True)
+    status = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+        quote_number = validated_data["quote_number"]
+        status = validated_data["status"]
+
+        # Retrieve the specific quote instance
+        try:
+            quote = Quote.objects.get(quote_number=quote_number)
+        except Quote.DoesNotExist:
+            raise serializers.ValidationError({"error": "Quote not found"})
+
+        quote.status = status
+
+        # Save the updated quote instance
+        quote.save()
+
+        return quote
+
+
 class CreateQuoteStep1Serializer(serializers.Serializer):
     electricity_spend = serializers.DecimalField(
         max_digits=10, decimal_places=2, write_only=True
