@@ -131,7 +131,6 @@ class CreateQuoteSerializer(serializers.Serializer):
         for component in components:
             if component in products:
                 component_data = products[component]
-                print("component_data", component_data)
                 product_id = component_data.get("id")
 
                 # Determine the quantity based on the component type using match
