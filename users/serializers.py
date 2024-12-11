@@ -1,8 +1,16 @@
 # users/serializers.py
 from rest_framework import serializers
-from .models import UserDetail, Quote, QuoteAppliance, QuoteBusiness, QuoteIndividual
+from .models import (
+    UserDetail,
+    Quote,
+    QuoteAppliance,
+    QuoteBusiness,
+    QuoteIndividual,
+    QuoteProduct,
+)
 from product.models import Appliance
 from .utils import calculate_quote, calculate_financing, generate_quote_number
+from django.forms.models import model_to_dict
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -113,6 +121,47 @@ class CreateQuoteSerializer(serializers.Serializer):
             breakdown_list,
         )
 
+        products = calculated_values.get("products", [])
+        # Clear existing products for this quote
+        QuoteProduct.objects.filter(quote=quote).delete()
+
+        # Define a list of components to handle
+        components = ["best_panel", "best_battery", "best_inverter"]
+
+        for component in components:
+            if component in products:
+                component_data = products[component]
+                product_id = component_data.get("id")
+                capacity_w = component_data.get("capacity_w")
+                price_usd = component_data.get("price_usd")
+
+                # Determine the quantity based on the component type using match
+                match component:
+                    case "best_panel":
+                        quantity = products.get("number_of_panels", 0)
+                    case "best_battery":
+                        quantity = products.get("number_of_batteries", 0)
+                    case "best_inverter":
+                        quantity = products.get("number_of_inverters", 0)
+                    case _:
+                        quantity = 0  # Default value for unsupported components
+
+                # Validate product_id and quantity before creating the entry
+                if product_id and isinstance(quantity, int) and quantity > 0:
+                    QuoteProduct.objects.create(
+                        quote=quote,
+                        product_id=product_id,
+                        quantity=quantity,
+                        capacity_w=capacity_w,
+                        price_usd=price_usd,
+                    )
+                else:
+                    print(
+                        f"Error: Invalid data for {component}. Ensure product_id and quantity are valid."
+                    )
+            else:
+                print(f"Error: {component} data is missing or incomplete.")
+
         # Set the calculated values to the quote instance
         quote.installation_and_cabling = calculated_values.get(
             "installation_and_cabling", 0
@@ -131,6 +180,28 @@ class CreateQuoteSerializer(serializers.Serializer):
         quote.total_load_kwh = calculated_values.get("total_load_kwh", 0)
         quote.total_vat = calculated_values.get("total_vat", 0)
         quote.vat = calculated_values.get("vat", 0)
+
+        # Save the updated quote instance
+        quote.save()
+
+        return quote
+
+
+class CreatePaymentQuoteSerializer(serializers.Serializer):
+    quote_number = serializers.CharField(write_only=True)
+    status = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+        quote_number = validated_data["quote_number"]
+        status = validated_data["status"]
+
+        # Retrieve the specific quote instance
+        try:
+            quote = Quote.objects.get(quote_number=quote_number)
+        except Quote.DoesNotExist:
+            raise serializers.ValidationError({"error": "Quote not found"})
+
+        quote.status = status
 
         # Save the updated quote instance
         quote.save()

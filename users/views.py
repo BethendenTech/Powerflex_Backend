@@ -16,6 +16,7 @@ from .serializers import (
     CreateQuoteStep3Serializer,
     BusinessFormSerializer,
     IndividualFormSerializer,
+    CreatePaymentQuoteSerializer
 )
 
 
@@ -107,6 +108,23 @@ def create_quote(request):
             return Response(
                 {
                     "message": "Quote created successfully.",
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def payment_quote(request):
+    if request.method == "POST":
+        serializer = CreatePaymentQuoteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            # Return the serialized quote data in the response
+            return Response(
+                {
+                    "message": "Quote updated successfully.",
                 },
                 status=status.HTTP_201_CREATED,
             )

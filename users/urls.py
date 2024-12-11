@@ -10,6 +10,7 @@ from .views import (
     create_quote_step_1,
     create_quote_step_2,
     create_quote_step_3,
+    payment_quote
 )
 
 urlpatterns = [
@@ -17,6 +18,7 @@ urlpatterns = [
     path("calculate-quote/", calculate_quote, name="calculate_quote"),
     path("calculate-financing/", calculate_financing, name="calculate_financing"),
     path("create-quote/", create_quote, name="create_quote"),
+    path("payment-quote/", payment_quote, name="payment_quote"),
     path("apply-business/", apply_business, name="apply_business"),
     path("apply-individual/", apply_individual, name="apply_individual"),
     path("create-quote-step-1/", create_quote_step_1, name="create_quote_step_1"),
