@@ -70,6 +70,8 @@ class QuoteProduct(models.Model):
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.FloatField(null=True)
+    capacity_w = models.TextField(blank=True, null=True)
+    price_usd = models.TextField(blank=True, null=True)
 
 
 class QuoteBusiness(models.Model):
