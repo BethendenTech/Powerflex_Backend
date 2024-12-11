@@ -18,6 +18,12 @@ class UserDetail(models.Model):
 
 
 class Quote(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "Pending", "Pending"
+        PAID = "Paid", "Paid"
+        CANCELLED = "Cancelled", "Cancelled"
+        APPROVED = "Approved", "Approved"
+
     user = models.ForeignKey(UserDetail, on_delete=models.CASCADE)
     quote_number = models.CharField(max_length=255, blank=True, null=True)
     electricity_spend = models.DecimalField(max_digits=10, decimal_places=2)
@@ -42,6 +48,13 @@ class Quote(models.Model):
     total_load_kwh = models.FloatField(blank=True, null=True)
     total_vat = models.FloatField(blank=True, null=True)
     vat = models.FloatField(blank=True, null=True)
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        help_text="Status of the quote (e.g., Pending, Paid, Cancelled, Approved)",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -77,6 +90,8 @@ class QuoteBusiness(models.Model):
     company_registration_document = models.TextField(null=True)
     bank_statements = models.TextField(null=True)
     recent_utility_bill = models.TextField(null=True)
+
+
 class QuoteIndividual(models.Model):
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
     first_name = models.CharField(null=True)
