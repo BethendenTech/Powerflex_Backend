@@ -88,10 +88,10 @@ class QuoteBusiness(models.Model):
     state = models.CharField(null=True)
     lga = models.CharField(null=True)
     bvn = models.CharField(null=True)
-    applicant_id_card = models.TextField(null=True)
-    company_registration_document = models.TextField(null=True)
-    bank_statements = models.TextField(null=True)
-    recent_utility_bill = models.TextField(null=True)
+    applicant_id_card = models.CharField(null=True)
+    company_registration_document = models.CharField(null=True)
+    bank_statements = models.CharField(null=True)
+    recent_utility_bill = models.CharField(null=True)
 
 
 class QuoteIndividual(models.Model):
