@@ -1,5 +1,6 @@
 # users/serializers.py
 from rest_framework import serializers
+import os
 from .models import (
     UserDetail,
     Quote,
@@ -7,6 +8,7 @@ from .models import (
     QuoteBusiness,
     QuoteIndividual,
     QuoteProduct,
+    UploadedFile
 )
 from product.models import Appliance
 from .utils import calculate_quote, calculate_financing, generate_quote_number
@@ -316,10 +318,10 @@ class BusinessFormSerializer(serializers.Serializer):
     state = serializers.CharField(write_only=True)
     lga = serializers.CharField(write_only=True)
     bvn = serializers.CharField(write_only=True)
-    applicant_id_card = serializers.CharField(read_only=True)
-    company_registration_document = serializers.CharField(read_only=True)
-    bank_statements = serializers.CharField(read_only=True)
-    recent_utility_bill = serializers.CharField(read_only=True)
+    applicant_id_card = serializers.CharField(required=False, allow_null=True)
+    company_registration_document = serializers.CharField(required=False, allow_null=True)
+    bank_statements = serializers.CharField(required=False, allow_null=True)
+    recent_utility_bill = serializers.CharField(required=False, allow_null=True)
 
     def create(self, validated_data):
 
@@ -372,3 +374,22 @@ class IndividualFormSerializer(serializers.Serializer):
         )
 
         return quote_business
+
+
+class UploadedFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadedFile
+        fields = ['file', 'uploaded_at']
+
+    def validate_file(self, value):
+        # Check file size
+        max_file_size = 10 * 1024 * 1024  # 10MB
+        if value.size > max_file_size:
+            raise serializers.ValidationError("File size exceeds the 10MB limit.")
+        
+        # Check file format
+        valid_formats = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4']
+        if value.content_type not in valid_formats:
+            raise serializers.ValidationError("Unsupported file format.")
+        
+        return value
