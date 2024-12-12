@@ -318,10 +318,10 @@ class BusinessFormSerializer(serializers.Serializer):
     state = serializers.CharField(write_only=True)
     lga = serializers.CharField(write_only=True)
     bvn = serializers.CharField(write_only=True)
-    applicant_id_card = serializers.CharField(read_only=True)
-    company_registration_document = serializers.CharField(read_only=True)
-    bank_statements = serializers.CharField(read_only=True)
-    recent_utility_bill = serializers.CharField(read_only=True)
+    applicant_id_card = serializers.CharField(required=False, allow_null=True)
+    company_registration_document = serializers.CharField(required=False, allow_null=True)
+    bank_statements = serializers.CharField(required=False, allow_null=True)
+    recent_utility_bill = serializers.CharField(required=False, allow_null=True)
 
     def create(self, validated_data):
 
