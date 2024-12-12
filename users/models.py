@@ -110,3 +110,11 @@ class QuoteIndividual(models.Model):
     occupation = models.CharField(null=True)
     work_address = models.TextField(null=True)
     how_heard_about = models.TextField(null=True)
+
+
+class UploadedFile(models.Model):
+    file = models.FileField(upload_to='uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.file.name
