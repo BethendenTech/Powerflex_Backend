@@ -38,8 +38,14 @@ class QuoteProductAdmin(admin.ModelAdmin):
     list_filter = ["quote", "product", "quantity"]
     search_fields = ["quote__quote_number", "product__name", "quantity"]
 
+
 @admin.register(QuoteApplication)
 class QuoteApplicationAdmin(admin.ModelAdmin):
-    list_display = ["quote", "first_name", "last_name"]
-    list_filter = ["quote", "first_name", "last_name"]
-    search_fields = ["quote__quote_number", "first_name", "last_name"]
+    list_display = ["quote", "application_type", "first_name", "last_name"]
+    list_filter = ["quote", "application_type", "first_name", "last_name"]
+    search_fields = [
+        "quote__quote_number",
+        "application_type",
+        "first_name",
+        "last_name",
+    ]
