@@ -14,8 +14,7 @@ from .serializers import (
     CreateQuoteStep1Serializer,
     CreateQuoteStep2Serializer,
     CreateQuoteStep3Serializer,
-    BusinessFormSerializer,
-    IndividualFormSerializer,
+    QuoteApplicationSerializer,
     CreatePaymentQuoteSerializer,
     UploadedFileSerializer,
 )
@@ -229,35 +228,11 @@ def create_quote_step_3(request):
 
 
 @api_view(["POST"])
-def apply_business(request):
+def create_quote_application(request):
     if request.method == "POST":
 
         # Initialize the serializer with data and context
-        serializer = BusinessFormSerializer(data=request.data)
-
-        # Validate the data
-        if serializer.is_valid():
-            try:
-                # Save the updated quote
-                serializer.save()
-                return Response(
-                    {"message": "Quote updated successfully."},
-                    status=status.HTTP_200_OK,
-                )
-            except Exception as e:
-                return Response(
-                    {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["POST"])
-def apply_individual(request):
-    if request.method == "POST":
-
-        # Initialize the serializer with data and context
-        serializer = IndividualFormSerializer(data=request.data)
+        serializer = QuoteApplicationSerializer(data=request.data)
 
         # Validate the data
         if serializer.is_valid():
