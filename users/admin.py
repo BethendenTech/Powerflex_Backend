@@ -4,8 +4,7 @@ from .models import (
     Quote,
     QuoteAppliance,
     QuoteProduct,
-    QuoteBusiness,
-    QuoteIndividual,
+    QuoteApplication,
 )
 
 # Register your models here.
@@ -40,15 +39,13 @@ class QuoteProductAdmin(admin.ModelAdmin):
     search_fields = ["quote__quote_number", "product__name", "quantity"]
 
 
-@admin.register(QuoteBusiness)
-class QuoteBusinessAdmin(admin.ModelAdmin):
-    list_display = ["quote", "first_name", "last_name"]
-    list_filter = ["quote", "first_name", "last_name"]
-    search_fields = ["quote__quote_number", "first_name", "last_name"]
-
-
-@admin.register(QuoteIndividual)
-class QuoteIndividualAdmin(admin.ModelAdmin):
-    list_display = ["quote", "first_name", "last_name"]
-    list_filter = ["quote", "first_name", "last_name"]
-    search_fields = ["quote__quote_number", "first_name", "last_name"]
+@admin.register(QuoteApplication)
+class QuoteApplicationAdmin(admin.ModelAdmin):
+    list_display = ["quote", "application_type", "first_name", "last_name"]
+    list_filter = ["quote", "application_type", "first_name", "last_name"]
+    search_fields = [
+        "quote__quote_number",
+        "application_type",
+        "first_name",
+        "last_name",
+    ]

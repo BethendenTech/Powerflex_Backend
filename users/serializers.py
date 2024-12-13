@@ -5,10 +5,9 @@ from .models import (
     UserDetail,
     Quote,
     QuoteAppliance,
-    QuoteBusiness,
-    QuoteIndividual,
     QuoteProduct,
-    UploadedFile
+    UploadedFile,
+    QuoteApplication,
 )
 from product.models import Appliance
 from .utils import calculate_quote, calculate_financing, generate_quote_number
@@ -304,22 +303,35 @@ class CreateQuoteStep3Serializer(serializers.Serializer):
             )
 
 
-class BusinessFormSerializer(serializers.Serializer):
+class QuoteApplicationSerializer(serializers.Serializer):
     quote_number = serializers.CharField(write_only=True)
-    role = serializers.CharField(write_only=True)
-    other_role = serializers.CharField(read_only=True)
+    application_type = serializers.CharField(write_only=True)
+    bvn = serializers.CharField(write_only=True)
     first_name = serializers.CharField(write_only=True)
     last_name = serializers.CharField(write_only=True)
-    phone_number = serializers.CharField(write_only=True)
-    business_name = serializers.CharField(write_only=True)
     house_number = serializers.CharField(write_only=True)
-    street_name = serializers.CharField(write_only=True)
-    nearest_bus_stop = serializers.CharField(write_only=True)
+    street_address = serializers.CharField(write_only=True)
+    landmark = serializers.CharField(write_only=True)
+    bus_stop = serializers.CharField(write_only=True)
+    occupation = serializers.CharField(write_only=True)
+    business_role = serializers.CharField(write_only=True)
+    other_role = serializers.CharField(read_only=True)
+    business_name = serializers.CharField(write_only=True)
+    business_address = serializers.CharField(write_only=True)
+    town = serializers.CharField(write_only=True)
+    city = serializers.CharField(write_only=True)
     state = serializers.CharField(write_only=True)
     lga = serializers.CharField(write_only=True)
-    bvn = serializers.CharField(write_only=True)
+    email = serializers.CharField(write_only=True)
+    phone_number = serializers.CharField(write_only=True)
+    reference_phone1 = serializers.CharField(write_only=True)
+    reference_phone2 = serializers.CharField(write_only=True)
+    how_heard_about = serializers.CharField(read_only=True)
+
     applicant_id_card = serializers.CharField(required=False, allow_null=True)
-    company_registration_document = serializers.CharField(required=False, allow_null=True)
+    company_registration_document = serializers.CharField(
+        required=False, allow_null=True
+    )
     bank_statements = serializers.CharField(required=False, allow_null=True)
     recent_utility_bill = serializers.CharField(required=False, allow_null=True)
 
@@ -332,64 +344,29 @@ class BusinessFormSerializer(serializers.Serializer):
             quote_number=quote_number,
         )
 
-        # Update or create QuoteBusiness record using the remaining fields
-        quote_business, created = QuoteBusiness.objects.update_or_create(
+        # Update or create QuoteApplication record using the remaining fields
+        quote_application, created = QuoteApplication.objects.update_or_create(
             quote=quote,
             defaults=validated_data,
         )
 
-        return quote_business
-
-
-class IndividualFormSerializer(serializers.Serializer):
-    quote_number = serializers.CharField(write_only=True)
-    first_name = serializers.CharField(write_only=True)
-    last_name = serializers.CharField(write_only=True)
-    phone_number = serializers.CharField(write_only=True)
-    house_number = serializers.CharField(write_only=True)
-    street_name = serializers.CharField(write_only=True)
-    landmark = serializers.CharField(write_only=True)
-    nearest_bus_stop = serializers.CharField(write_only=True)
-    town = serializers.CharField(write_only=True)
-    city = serializers.CharField(write_only=True)
-    state = serializers.CharField(write_only=True)
-    lga = serializers.CharField(write_only=True)
-    occupation = serializers.CharField(write_only=True)
-    work_address = serializers.CharField(write_only=True)
-    how_heard_about = serializers.CharField(write_only=True)
-
-    def create(self, validated_data):
-
-        # Extract the quote_number
-        quote_number = validated_data.pop("quote_number")
-
-        quote = Quote.objects.get(
-            quote_number=quote_number,
-        )
-
-        # Update or create QuoteIndividual record using the remaining fields
-        quote_business, created = QuoteIndividual.objects.update_or_create(
-            quote=quote,
-            defaults=validated_data,
-        )
-
-        return quote_business
+        return quote_application
 
 
 class UploadedFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UploadedFile
-        fields = ['file', 'uploaded_at']
+        fields = ["file", "uploaded_at"]
 
     def validate_file(self, value):
         # Check file size
         max_file_size = 10 * 1024 * 1024  # 10MB
         if value.size > max_file_size:
             raise serializers.ValidationError("File size exceeds the 10MB limit.")
-        
+
         # Check file format
-        valid_formats = ['image/jpeg', 'image/png', 'application/pdf', 'video/mp4']
+        valid_formats = ["image/jpeg", "image/png", "application/pdf", "video/mp4"]
         if value.content_type not in valid_formats:
             raise serializers.ValidationError("Unsupported file format.")
-        
+
         return value

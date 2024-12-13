@@ -74,46 +74,37 @@ class QuoteProduct(models.Model):
     price_usd = models.TextField(blank=True, null=True)
 
 
-class QuoteBusiness(models.Model):
+class QuoteApplication(models.Model):
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
-    role = models.CharField(null=True)
+    application_type = models.CharField(null=True)
+    bvn = models.CharField(null=True)
     other_role = models.CharField(null=True)
     first_name = models.CharField(null=True)
     last_name = models.CharField(null=True)
-    phone_number = models.CharField(null=True)
-    business_name = models.CharField(null=True)
     house_number = models.CharField(null=True)
-    street_name = models.CharField(null=True)
-    nearest_bus_stop = models.CharField(null=True)
+    street_address = models.CharField(null=True)
+    landmark = models.CharField(null=True)
+    bus_stop = models.CharField(null=True)
+    occupation = models.CharField(null=True)
+    business_role = models.CharField(null=True)
+    business_name = models.CharField(null=True)
+    business_address = models.CharField(null=True)
+    town = models.CharField(null=True)
+    city = models.CharField(null=True)
     state = models.CharField(null=True)
     lga = models.CharField(null=True)
-    bvn = models.CharField(null=True)
+    email = models.CharField(null=True)
+    phone_number = models.CharField(null=True)
+    reference_phone1 = models.CharField(null=True)
+    reference_phone2 = models.CharField(null=True)
+    how_heard_about = models.TextField(null=True)
     applicant_id_card = models.CharField(null=True)
     company_registration_document = models.CharField(null=True)
     bank_statements = models.CharField(null=True)
     recent_utility_bill = models.CharField(null=True)
 
-
-class QuoteIndividual(models.Model):
-    quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
-    first_name = models.CharField(null=True)
-    last_name = models.CharField(null=True)
-    phone_number = models.CharField(null=True)
-    house_number = models.CharField(null=True)
-    street_name = models.CharField(null=True)
-    landmark = models.CharField(null=True)
-    nearest_bus_stop = models.CharField(null=True)
-    town = models.CharField(null=True)
-    city = models.CharField(null=True)
-    state = models.CharField(null=True)
-    lga = models.CharField(null=True)
-    occupation = models.CharField(null=True)
-    work_address = models.TextField(null=True)
-    how_heard_about = models.TextField(null=True)
-
-
 class UploadedFile(models.Model):
-    file = models.FileField(upload_to='uploads/')
+    file = models.FileField(upload_to="uploads/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
