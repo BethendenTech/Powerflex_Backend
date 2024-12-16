@@ -232,6 +232,8 @@ def calculate_system_components(
         "total_battery_cost_naira": round(total_battery_cost_usd * exchange_rate),
     }
 
+    print("products", products)
+
     total_cost_usd = (
         total_panel_cost_usd + total_inverter_cost_usd + total_battery_cost_usd
     )
