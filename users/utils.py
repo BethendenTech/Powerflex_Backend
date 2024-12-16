@@ -216,6 +216,8 @@ def calculate_system_components(
         "best_panel": model_to_dict(best_panel),
         "best_inverter": model_to_dict(best_inverter),
         "best_battery": model_to_dict(best_battery),
+        "battery_capacity_kwh": (battery_capacity_kwh),
+        "effective_battery_capacity_kwh": (effective_battery_capacity_kwh),
         "number_of_panels": round(number_of_panels),
         "number_of_inverters": round(number_of_inverters),
         "number_of_batteries": round(number_of_batteries),
@@ -229,7 +231,7 @@ def calculate_system_components(
         "total_inverter_cost_naira": round(total_inverter_cost_usd * exchange_rate),
         "total_battery_cost_naira": round(total_battery_cost_usd * exchange_rate),
     }
-    
+
     total_cost_usd = (
         total_panel_cost_usd + total_inverter_cost_usd + total_battery_cost_usd
     )
@@ -385,6 +387,8 @@ def calculate_quote(
         band_group,
         is_finance,
     )
+
+    print("system_details", system_details)
 
     # Financing calculations based on total cost without profit margin
     financing_details = calculate_financing(system_details["total_cost_naira"])
