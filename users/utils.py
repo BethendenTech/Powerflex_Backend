@@ -1,13 +1,9 @@
-import os
-import json
-import uuid
 import requests
 from decimal import Decimal
 from product.models import Product, Appliance
 from setting.models import Settings
-from django.db.models import Max
+from users.models import Quote
 from django.forms.models import model_to_dict
-
 
 # Load exchange rate using ExchangeRate API
 def get_exchange_rate(api_key, base_currency, target_currency):
@@ -232,6 +228,8 @@ def calculate_system_components(
         "total_battery_cost_naira": round(total_battery_cost_usd * exchange_rate),
     }
 
+    print("products", products)
+
     total_cost_usd = (
         total_panel_cost_usd + total_inverter_cost_usd + total_battery_cost_usd
     )
@@ -408,4 +406,9 @@ def calculate_quote(
 
 
 def generate_quote_number():
-    return str(uuid.uuid4())[:8].upper()
+    last_quote = Quote.objects.order_by("id").last()
+    if last_quote:
+        new_id = int(last_quote.quote_number[3:]) + 1
+        return f"PFX{str(new_id).zfill(10)}"
+    else:
+        return "PFX0000000001"
