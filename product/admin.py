@@ -16,9 +16,16 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "category", "brand", "price_usd", "supplier"]
-    list_filter = ["category", "brand"]
-    search_fields = ["name", "category__name", "brand__name"]
+    list_display = ["name", "category", "brand", "price_usd", "capacity_w", "supplier"]
+    list_filter = ["category", "brand", "price_usd", "capacity_w", "supplier"]
+    search_fields = [
+        "name",
+        "category__name",
+        "brand__name",
+        "price_usd",
+        "capacity_w",
+        "supplier",
+    ]
 
 
 @admin.register(ApplianceCategory)
