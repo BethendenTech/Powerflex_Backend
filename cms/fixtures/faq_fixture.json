@@ -1,0 +1,62 @@
+[
+    {
+        "id": 1,
+        "name": "What is PowerFlex?",
+        "description": "PowerFlex is a complete solar energy solution that provides affordable and reliable solar systems for homes and businesses. We also offer flexible financing plans to make solar energy accessible to everyone."
+    },
+    {
+        "id": 2,
+        "name": "How does PowerFlex work?",
+        "description": "We provide tailored solar solutions based on your energy needs. After assessing your requirements, we design, deliver, and install the ideal system for your home or business. Financing options are also available to make payments more manageable."
+    },
+    {
+        "id": 3,
+        "name": "Who is PowerFlex for?",
+        "description": "PowerFlex serves individuals, households, and businesses looking for affordable and sustainable solar energy solutions."
+    },
+    {
+        "id": 4,
+        "name": "What types of products does PowerFlex offer?",
+        "description": "We offer a variety of solar products, including:\r\n●\tSolar Panels\r\n●\tInverters\r\n●\tBatteries\r\n●\tInstallation services"
+    },
+    {
+        "id": 5,
+        "name": "Can I get financing for PowerFlex products?",
+        "description": "Yes, we offer two payment options:\r\n●\tOutright Payment: Pay the total cost upfront.\r\n●\tInstallment Plans: Spread payments over a period 12 months"
+    },
+    {
+        "id": 6,
+        "name": "Is collateral required?",
+        "description": "No, collateral is not required."
+    },
+    {
+        "id": 7,
+        "name": "What documents are required to apply for financing?",
+        "description": "To qualify for financing, you’ll need to provide the following:\r\n●\tA valid means of identification (e.g., NIN, Driver's License, or International Passport)\r\n●\t2 References\r\n●\t6 months bank statement\r\n●\tRecent utility bill \r\n●\tFor businesses: CAC registration document"
+    },
+    {
+        "id": 8,
+        "name": "Can I use PowerFlex to power my entire home or business?",
+        "description": "Yes, our solutions are customized to meet your energy needs, whether for a single appliance, your entire home, or business operations."
+    },
+    {
+        "id": 9,
+        "name": "What warranty do PowerFlex products come with?",
+        "description": "All PowerFlex products come with a manufacturer’s warranty: panels up to 25 years, and Lithium batteries up to 10 years with proper maintenance."
+    },
+    {
+        "id": 10,
+        "name": "What happens if I miss a payment under the financing plan?",
+        "description": "Defaulting on payments will result in remote locking of the system and additional penalties."
+    },
+    {
+        "id": 11,
+        "name": "Why should I choose PowerFlex over other solar companies?",
+        "description": "PowerFlex stands out for its focus on affordability, flexible financing, and end-to-end solutions that include product supply, installation, and ongoing support."
+    },
+    {
+        "id": 12,
+        "name": "Is PowerFlex scalable?",
+        "description": "Yes, our solutions support households and businesses, adapting to growing energy needs."
+    }
+]
