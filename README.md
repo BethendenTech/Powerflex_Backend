@@ -44,6 +44,12 @@ python manage.py flush
 python manage.py createsuperuser
 ```
 
+## Export data
+
+```bash
+python manage.py export_faqs
+
+```
 ## Load data
 
 ```bash
@@ -53,6 +59,7 @@ python manage.py loaddata product/fixtures/product.json
 python manage.py loaddata product/fixtures/appliance_category.json
 python manage.py loaddata product/fixtures/appliance.json
 python manage.py loaddata setting/fixtures/data.json
+python manage.py loaddata cms/fixtures/faq_fixture.json
 ```
 
 

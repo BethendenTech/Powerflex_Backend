@@ -26,4 +26,5 @@ urlpatterns = [
     path("", RedirectView.as_view(url="/admin/", permanent=True)),
     path("api/", include("users.urls")),
     path("product/", include("product.urls")),
+    path("cms/", include("cms.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
