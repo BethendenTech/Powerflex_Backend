@@ -15,14 +15,26 @@ class Command(BaseCommand):
         os.makedirs(output_dir, exist_ok=True)
 
         # Get all FAQ objects
-        faqs = FAQ.objects.all().values('id', 'name', 'description')
+        faqs = FAQ.objects.all()
+
+        # Prepare data in the fixture format
+        fixture_data = []
+        for faq in faqs:
+            fixture_data.append({
+                "model": "cms.faq",
+                "pk": faq.id,
+                "fields": {
+                    "name": faq.name,
+                    "description": faq.description
+                }
+            })
 
         # Custom debug print
         self.stdout.write(f"Process lines, file_name command_line {output_file.encode('utf-8')}")
 
         # Serialize the data using json.dumps with UTF-8 encoding
         with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(list(faqs), f, ensure_ascii=False, indent=4)
+            json.dump(fixture_data, f, ensure_ascii=False, indent=4)
 
         # Confirmation message
         self.stdout.write(f"FAQs successfully exported to {output_file}")
