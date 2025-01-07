@@ -8,7 +8,8 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import UserDetail
+from .models import UserDetail, Quote
+
 
 from .serializers import (
     UserDetailSerializer,
@@ -267,14 +268,53 @@ def upload_file(request):
 @api_view(["GET"])
 def mail_quote(request):
     if request.method == "GET":
-        subject = "Welcome to PowerFlex!"
-        message = "Thank you for signing up for PowerFlex. We’re thrilled to have you on board!"
-        from_email = settings.DEFAULT_FROM_EMAIL
-        recipient_list = ['recipient@example.com']  # Replace with the recipient's email
-
         try:
-            send_mail(subject, message, from_email, recipient_list)
-            print("Email sent successfully!")
-        except Exception as e:
-            print(f"Failed to send email: {e}")
+            # Retrieve all quotes with status 'pending'
+            pending_quotes = Quote.objects.filter(status="pending")
 
+            if not pending_quotes.exists():
+                return Response(
+                    {"message": "No pending quotes found."}, status=status.HTTP_200_OK
+                )
+
+            # Loop through each pending quote and send email
+            failed_emails = []
+            for quote in pending_quotes:
+                # Retrieve the email from the related user
+                user_email = quote.user.email
+
+                subject = "Your Quote Status: Pending"
+                message = (
+                    f"Dear Customer,\n\n"
+                    f"Your quote with ID {quote.id} is currently in a pending state. "
+                    f"We will notify you once it is updated.\n\n"
+                    f"Thank you for choosing PowerFlex!"
+                )
+                from_email = settings.DEFAULT_FROM_EMAIL
+                recipient_list = [user_email]
+
+                try:
+                    send_mail(subject, message, from_email, recipient_list)
+                    print(f"Email sent to {user_email} for Quote ID {quote.id}")
+                except Exception as e:
+                    print(f"Failed to send email to {user_email}: {e}")
+                    failed_emails.append(user_email)
+
+            # Response with success and failed emails
+            if failed_emails:
+                return Response(
+                    {
+                        "message": "Emails sent with some failures.",
+                        "failed_emails": failed_emails,
+                    },
+                    status=status.HTTP_207_MULTI_STATUS,
+                )
+            return Response(
+                {"message": "Emails sent successfully!"}, status=status.HTTP_200_OK
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": f"An error occurred: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
