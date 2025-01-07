@@ -2,10 +2,14 @@ from django.shortcuts import render
 
 # Create your views here.
 
+from django.core.mail import send_mail
+from django.conf import settings
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import UserDetail
+
 from .serializers import (
     UserDetailSerializer,
     QuoteSerializer,
@@ -258,3 +262,19 @@ def upload_file(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def mail_quote(request):
+    if request.method == "GET":
+        subject = "Welcome to PowerFlex!"
+        message = "Thank you for signing up for PowerFlex. We’re thrilled to have you on board!"
+        from_email = settings.DEFAULT_FROM_EMAIL
+        recipient_list = ['recipient@example.com']  # Replace with the recipient's email
+
+        try:
+            send_mail(subject, message, from_email, recipient_list)
+            print("Email sent successfully!")
+        except Exception as e:
+            print(f"Failed to send email: {e}")
+
