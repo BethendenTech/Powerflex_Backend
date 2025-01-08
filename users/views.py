@@ -286,7 +286,7 @@ def mail_quote(request):
                 subject = "Your Quote Status: Pending"
                 message = (
                     f"Dear Customer,\n\n"
-                    f"Your quote with ID {quote.id} is currently in a pending state. "
+                    f"Your quote with number {quote.quote_number} is currently in a pending state. "
                     f"We will notify you once it is updated.\n\n"
                     f"Thank you for choosing PowerFlex!"
                 )
@@ -295,7 +295,9 @@ def mail_quote(request):
 
                 try:
                     send_mail(subject, message, from_email, recipient_list)
-                    print(f"Email sent to {user_email} for Quote ID {quote.id}")
+                    print(
+                        f"Email sent to {user_email} for Quote Number {quote.quote_number}"
+                    )
                 except Exception as e:
                     print(f"Failed to send email to {user_email}: {e}")
                     failed_emails.append(user_email)
