@@ -11,10 +11,12 @@ from .views import (
     create_quote_step_3,
     payment_quote,
     upload_file,
+    mail_quote,
 )
 
 urlpatterns = [
     path("submit-details/", submit_user_details, name="submit_details"),
+    path("mail-quote/", mail_quote, name="mail_quote"),
     path("calculate-quote/", calculate_quote, name="calculate_quote"),
     path("calculate-financing/", calculate_financing, name="calculate_financing"),
     path("create-quote/", create_quote, name="create_quote"),
