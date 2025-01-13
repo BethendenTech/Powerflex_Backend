@@ -5,6 +5,7 @@ from setting.models import Settings
 from users.models import Quote
 from django.forms.models import model_to_dict
 
+
 # Load exchange rate using ExchangeRate API
 def get_exchange_rate(api_key, base_currency, target_currency):
     """Fetch the current exchange rate from an external API."""
@@ -292,7 +293,6 @@ def calculate_system_components(
         "total_cost_naira": round(total_cost_naira),
         "installation_and_cabling": round(installation_and_cabling),
         "total_cost_with_profit": round(total_cost_with_profit),
-        "user_id": 1,
         "electricity_spend": round(electricity_spend, 2),
         "installer_commission": round(installer_commission),
         "installer_commission_amount": round(installer_commission_amount),
