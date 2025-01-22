@@ -42,9 +42,10 @@ def calculate_base_consumption(monthly_spend, band_group):
 
     base_daily_consumption_kwh = float(base_consumption_kwh_per_month) / 30
 
+    return base_daily_consumption_kwh
     # Adjust base consumption to the actual number of hours supply for the band group
-    adjusted_daily_consumption_kwh = base_daily_consumption_kwh * (24 / hours_per_day)
-    return adjusted_daily_consumption_kwh
+    # adjusted_daily_consumption_kwh = base_daily_consumption_kwh * (24 / hours_per_day)
+    # return adjusted_daily_consumption_kwh
 
 
 # Function to calculate appliance-based consumption (optional)
