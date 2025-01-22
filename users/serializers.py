@@ -63,6 +63,8 @@ class QuoteSerializer(serializers.Serializer):
     vat = serializers.FloatField(read_only=True)
     installer_commission = serializers.FloatField(read_only=True)
     installer_commission_amount = serializers.FloatField(read_only=True)
+    profit_margin = serializers.FloatField(read_only=True)
+    profit_margin_amount = serializers.FloatField(read_only=True)
     total_equipments = serializers.FloatField(read_only=True)
     total_vat = serializers.FloatField(read_only=True)
     savings_and_roi = serializers.JSONField(read_only=True)
