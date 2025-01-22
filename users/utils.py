@@ -265,15 +265,17 @@ def calculate_system_components(
     installer_commission_amount = total_cost_naira * installer_commission / 100
 
     if is_finance:
+        profit_margin = profit_margin_financing
         profit_margin_amount = total_cost_naira * profit_margin_financing / 100
     else:
+        profit_margin = profit_margin_outright
         profit_margin_amount = total_cost_naira * profit_margin_outright / 100
 
     # 20% profit margin calculate from back office
     total_cost_with_profit = (
         total_cost_naira
         + installation_and_cabling
-        + installer_commission_amount
+        # + installer_commission_amount
         + profit_margin_amount
     )
 
@@ -297,6 +299,8 @@ def calculate_system_components(
         "electricity_spend": round(electricity_spend, 2),
         "installer_commission": round(installer_commission),
         "installer_commission_amount": round(installer_commission_amount),
+        "profit_margin": round(profit_margin),
+        "profit_margin_amount": round(profit_margin_amount),
         "price_band": price_band,
         "vat": vat,
         "total_vat": total_vat,
