@@ -273,7 +273,7 @@ def calculate_system_components(
     total_cost_with_profit = (
         total_cost_naira
         + installation_and_cabling
-        + installer_commission_amount
+        # + installer_commission_amount
         + profit_margin_amount
     )
 
