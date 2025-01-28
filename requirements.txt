@@ -1,0 +1,9 @@
+requests
+psycopg2-binary
+psycopg2
+django-cors-headers
+python-dotenv
+django-jazzmin
+djangorestframework
+gunicorn
+whitenoise

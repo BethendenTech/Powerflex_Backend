@@ -1,0 +1,26 @@
+[
+    {
+        "model": "product.category",
+        "pk": 1,
+        "fields": {
+            "name": "Solar Panels",
+            "description": "Various types of solar panels."
+        }
+    },
+    {
+        "model": "product.category",
+        "pk": 2,
+        "fields": {
+            "name": "Inverters",
+            "description": "Devices to convert DC to AC."
+        }
+    },
+    {
+        "model": "product.category",
+        "pk": 3,
+        "fields": {
+            "name": "Batteries",
+            "description": "Energy storage solutions."
+        }
+    }
+]

@@ -1,0 +1,50 @@
+[
+    {
+        "model": "product.brand",
+        "pk": 1,
+        "fields": {
+            "name": "SunPower",
+            "description": "Leading solar technology company."
+        }
+    },
+    {
+        "model": "product.brand",
+        "pk": 2,
+        "fields": {
+            "name": "GosPower",
+            "description": "Reliable power solutions."
+        }
+    },
+    {
+        "model": "product.brand",
+        "pk": 3,
+        "fields": {
+            "name": "tbc",
+            "description": "To be confirmed."
+        }
+    },
+    {
+        "model": "product.brand",
+        "pk": 4,
+        "fields": {
+            "name": "Growatt",
+            "description": ""
+        }
+    },
+    {
+        "model": "product.brand",
+        "pk": 5,
+        "fields": {
+            "name": "Pylontech",
+            "description": ""
+        }
+    },
+    {
+        "model": "product.brand",
+        "pk": 6,
+        "fields": {
+            "name": "Cworth",
+            "description": ""
+        }
+    }
+]

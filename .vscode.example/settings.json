@@ -1,0 +1,16 @@
+{
+    "rest-client.environmentVariables": {
+        "sandbox": {
+            "baseUrl": "http://127.0.0.1:8000/",
+            "accessToken": "1|D2EL27LsIDwl7DjqjilRzu5dGpsmhOeCObKKtBFxa0e4d2c2",
+        },
+        "production": {
+            "baseUrl": "http://127.0.0.1:8000/",
+            "accessToken": "2|xGPxxLZzQgX5NEV741PeizCYbBeIrG8MowPdsv06",
+        },
+        "staging": {
+            "baseUrl": "http://127.0.0.1:8000/",
+            "accessToken": "5254|x4VQHEq3MYRWlr6f72LqYIkjsdfWa3Y4LwLk2O20",
+        }
+    }
+}

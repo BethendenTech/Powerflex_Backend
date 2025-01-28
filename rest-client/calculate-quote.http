@@ -1,0 +1,18 @@
+POST {{baseUrl}}api/calculate-quote/ HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "electricity_spend": 250000,
+  "price_band": "A",
+  "solar_load": "1000",
+  "battery_autonomy_hours": 0,
+  "breakdowns": {
+    "1": {
+      "id": true,
+      "quantity": 1,
+      "usage": 5
+    }
+  },
+  "is_finance": true
+}

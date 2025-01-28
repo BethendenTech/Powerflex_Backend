@@ -1,0 +1,172 @@
+[
+    {
+        "model": "product.appliance",
+        "pk": 1,
+        "fields": {
+            "category": 1,
+            "name": "Coffee Maker",
+            "power_w": 600,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 2,
+        "fields": {
+            "category": 1,
+            "name": "Microwave",
+            "power_w": 400,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 3,
+        "fields": {
+            "category": 1,
+            "name": "Toaster",
+            "power_w": 300,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 4,
+        "fields": {
+            "category": 1,
+            "name": "Oven",
+            "power_w": 900,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 5,
+        "fields": {
+            "category": 1,
+            "name": "Blender",
+            "power_w": 300,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 6,
+        "fields": {
+            "category": 1,
+            "name": "Kettle",
+            "power_w": 3000,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 7,
+        "fields": {
+            "category": 2,
+            "name": "Fridge",
+            "power_w": 150,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 8,
+        "fields": {
+            "category": 2,
+            "name": "Freezer",
+            "power_w": 200,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 9,
+        "fields": {
+            "category": 3,
+            "name": "Washing Machine",
+            "power_w": 500,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 10,
+        "fields": {
+            "category": 3,
+            "name": "Dryer",
+            "power_w": 2160,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 11,
+        "fields": {
+            "category": 4,
+            "name": "Lighting (LED bulb)",
+            "power_w": 8,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 12,
+        "fields": {
+            "category": 5,
+            "name": "Air Conditioning",
+            "power_w": 1500,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 13,
+        "fields": {
+            "category": 6,
+            "name": "Laptop",
+            "power_w": 75,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 14,
+        "fields": {
+            "category": 6,
+            "name": "Television",
+            "power_w": 300,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 15,
+        "fields": {
+            "category": 6,
+            "name": "Desktop Computer",
+            "power_w": 200,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 16,
+        "fields": {
+            "category": 6,
+            "name": "Electric Car",
+            "power_w": 200,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.appliance",
+        "pk": 17,
+        "fields": {
+            "category": 6,
+            "name": "Other",
+            "power_w": 0,
+            "description": ""
+        }
+    }
+]
