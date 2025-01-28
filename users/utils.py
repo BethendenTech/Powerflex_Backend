@@ -29,8 +29,8 @@ def calculate_base_consumption(monthly_spend, band_group):
 
     # Retrieve band data from the database
     band_data = Band.objects.get(id=band_group)
-    
-    print(f"Band =  {band_data.name}")
+
+    print(f"Band = {band_data}")
 
     if band_data:
         price_per_kwh = band_data.price
