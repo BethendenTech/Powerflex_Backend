@@ -62,3 +62,13 @@ class Appliance(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Band(models.Model):
+    name = models.CharField(max_length=100)
+    hours_supply = models.FloatField(blank=True, null=True)
+    price = models.FloatField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
