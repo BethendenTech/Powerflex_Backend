@@ -1,0 +1,32 @@
+[
+    {
+        "model": "product.band",
+        "pk": 1,
+        "fields": {
+            "name": "A",
+            "hours_supply": 20,
+            "price": 209.5,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.band",
+        "pk": 2,
+        "fields": {
+            "name": "B",
+            "hours_supply": 16,
+            "price": 67.96,
+            "description": ""
+        }
+    },
+    {
+        "model": "product.band",
+        "pk": 3,
+        "fields": {
+            "name": "C",
+            "hours_supply": 12,
+            "price": 53.49,
+            "description": ""
+        }
+    }
+]

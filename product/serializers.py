@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Appliance, ApplianceCategory
+from .models import Appliance, ApplianceCategory, Band
 
 
 class ApplianceSerializer(serializers.ModelSerializer):
@@ -14,3 +14,9 @@ class ApplianceCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplianceCategory
         fields = ["id", "name", "type", "appliances"]
+
+
+class BandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Band
+        fields = ["id", "name", "hours_supply", "price", "description"]
