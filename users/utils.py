@@ -1,6 +1,6 @@
 import requests
 from decimal import Decimal
-from product.models import Product, Appliance
+from product.models import Product, Appliance, Band
 from setting.models import Settings
 from users.models import Quote
 from django.forms.models import model_to_dict
@@ -26,16 +26,14 @@ def get_exchange_rate(api_key, base_currency, target_currency):
 
 # Function to calculate the base consumption based on the monthly spend and band group
 def calculate_base_consumption(monthly_spend, band_group):
-    band_prices = {"A": 209.5, "B": 67.96, "C": 53.49}  # Price per kWh for each band
-    hours_supply = {"A": 20, "B": 16, "C": 12}  # Hours of electricity supply per day
 
-    # Validate band group
-    if band_group not in band_prices:
-        raise ValueError("Error: Please specify a valid band group (A, B, or C)")
-
-    # Select price per kWh and hours of supply based on band group
-    price_per_kwh = band_prices[band_group]
-    hours_per_day = hours_supply[band_group]
+    # Retrieve band data from the database
+    band_data = Band.objects.get(id=band_group)
+    if band_data:
+        price_per_kwh = band_data.price
+        hours_per_day = band_data.hours_supply
+    else:
+        raise ValueError("Error: Band data not found for the specified group")
 
     # Calculate base consumption considering the hours of electricity supply
     base_consumption_kwh_per_month = float(monthly_spend) / price_per_kwh
