@@ -27,7 +27,7 @@ class Product(models.Model):
     model_name = models.TextField(blank=True, null=True)
     model_year = models.TextField(blank=True, null=True)
     country_of_origin = models.TextField(blank=True, null=True)
-    capacity_w = models.TextField(blank=True, null=True)
+    capacity_w = models.FloatField(blank=True, null=True)
     price_usd = models.TextField(blank=True, null=True)
     voc_v = models.TextField(blank=True, null=True)
     isc_a = models.TextField(blank=True, null=True)
