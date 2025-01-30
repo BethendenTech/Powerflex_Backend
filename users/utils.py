@@ -163,31 +163,43 @@ def calculate_system_components(
     else:
         number_of_panels = 0  # or another default value
 
-    # Selecting best inverter
-    inverter_input_w = load_covered_by_solar * 1000
-    inverter_size_w = inverter_input_w * 1.2
-    best_inverter = select_best_component(2, inverter_size_w)
+    # Calculate hourly load assuming 12 hours/day usage (Band C scenario)
+    hours_per_day = 12
+    hourly_load = load_covered_by_solar / hours_per_day
 
-    # Check if the capacity_w value is not null or zero
+    # Estimate peak power demand with diversity factor (e.g., 1.5 for simultaneous usage)
+    diversity_factor = 1.5
+    peak_power_demand = hourly_load * diversity_factor  # in kW
+
+    # Apply power factor correction and safety margin
+    power_factor = 0.8  # Typical residential value
+    safety_margin = 1.2  # 20% safety margin
+    apparent_power_kva = peak_power_demand / power_factor
+    inverter_size_kva = apparent_power_kva * safety_margin
+
+    # Select the best inverter
+    best_inverter = select_best_component(
+        2, inverter_size_kva * 1000
+    )  # Convert kVA to W
+
     if best_inverter and best_inverter.capacity_w is not None:
-        number_of_inverters = inverter_size_w / float(best_inverter.capacity_w)
+        number_of_inverters = inverter_size_kva / (
+            float(best_inverter.capacity_w) / 1000
+        )
     else:
-        number_of_inverters = 0  # or another default value
+        number_of_inverters = 0
 
     # Selecting best battery
     battery_capacity_kwh = load_covered_by_solar * (battery_autonomy_hours / 24)
-
     best_battery = select_best_component(3, battery_capacity_kwh)
 
-    effective_battery_capacity_kwh = battery_capacity_kwh / (
-        float(best_battery.dod) / 100 * float(best_battery.efficiency) / 100
-    )
-
     if best_battery and best_battery.capacity_w is not None:
-        number_of_batteries = effective_battery_capacity_kwh / float(
-            best_battery.capacity_w
+        effective_battery_capacity_kwh = battery_capacity_kwh / (
+            float(best_battery.dod) / 100 * float(best_battery.efficiency) / 100
         )
+        number_of_batteries = effective_battery_capacity_kwh / float(best_battery.capacity_w)
     else:
+        effective_battery_capacity_kwh = 0
         number_of_batteries = 0
 
     # Check if the prices are not null or empty
