@@ -145,7 +145,8 @@ def calculate_system_components(
         solar_energy_required / 6
     )  # Assuming 6 sun hours per day
 
-    best_panel = select_best_component(1, panel_required_output_kwh * 1000)
+    panel_required_capacity = panel_required_output_kwh * 1000  # Convert to W
+    best_panel = select_best_component(1, panel_required_capacity)
 
     # Check if the capacity_w value is not null or empty
     if best_panel and best_panel.capacity_w is not None:
@@ -318,6 +319,7 @@ def calculate_system_components(
         "vat": vat,
         "total_vat": total_vat,
         "products": products,
+        "panel_required_capacity": panel_required_capacity,
     }
 
 
