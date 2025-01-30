@@ -167,7 +167,6 @@ def calculate_system_components(
     band_data = Band.objects.get(id=price_band)
     hours_per_day = band_data.hours_supply
     # Calculate hourly load assuming 12 hours/day usage (Band C scenario)
-    hours_per_day = 12
     hourly_load = load_covered_by_solar / hours_per_day
 
     # Estimate peak power demand with diversity factor (e.g., 1.5 for simultaneous usage)
