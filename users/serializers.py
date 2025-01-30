@@ -37,7 +37,7 @@ class QuoteSerializer(serializers.Serializer):
     electricity_spend = serializers.DecimalField(
         max_digits=10, decimal_places=2, write_only=True
     )
-    price_band = serializers.CharField(max_length=255, write_only=True)
+    price_band = serializers.DecimalField(max_digits=10, decimal_places=2, write_only=True)
     solar_load = serializers.DecimalField(
         max_digits=10, decimal_places=2, write_only=True
     )
