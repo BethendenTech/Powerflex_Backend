@@ -6,8 +6,10 @@ from users.models import Quote
 from django.forms.models import model_to_dict
 from django.db.models import Min
 
+
 def safe_model_to_dict(instance):
     return model_to_dict(instance) if instance else None
+
 
 # Load exchange rate using ExchangeRate API
 def get_exchange_rate(api_key, base_currency, target_currency):
@@ -224,6 +226,7 @@ def calculate_system_components(
     total_panel_cost_usd = number_of_panels * panel_price_usd
     total_inverter_cost_usd = number_of_inverters * inverter_price_usd
     total_battery_cost_usd = number_of_batteries * battery_price_usd
+
 
     products = {
         "best_panel": safe_model_to_dict(best_panel),
