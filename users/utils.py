@@ -4,7 +4,7 @@ from product.models import Product, Appliance, Band
 from setting.models import Settings
 from users.models import Quote
 from django.forms.models import model_to_dict
-
+from django.db.models import Min
 
 # Load exchange rate using ExchangeRate API
 def get_exchange_rate(api_key, base_currency, target_currency):
@@ -107,20 +107,29 @@ def refine_total_load(base_consumption_kwh_per_day, appliance_consumption_kwh_pe
 
 # Function to select the best component based on minimum requirements
 def select_best_component(category_id, required_capacity):
-    # Try to find a suitable component with capacity >= required_capacity
-    suitable_component = Product.objects.filter(
-        category_id=category_id, capacity_w__gte=required_capacity
-    ).first()
+    # Try to find the closest suitable component with capacity >= required_capacity
+    suitable_component = (
+        Product.objects.filter(
+            category_id=category_id, capacity_w__gte=required_capacity
+        )
+        .order_by("capacity_w")
+        .first()
+    )  # Order by closest match
 
     if suitable_component:
         return suitable_component
 
-    # If no suitable component found, get the product with the maximum capacity
-    suitable_component = (
-        Product.objects.filter(category_id=category_id).order_by("-capacity_w").first()
+    # If no suitable component found, get the product with the minimum excess capacity
+    suitable_component = Product.objects.filter(category_id=category_id).aggregate(
+        Min("capacity_w")
     )
 
-    return suitable_component
+    if suitable_component:
+        return Product.objects.filter(
+            category_id=category_id, capacity_w=suitable_component["capacity_w__min"]
+        ).first()
+
+    return None  # Return None if no product exists
 
 
 # Function to calculate the system's components
