@@ -175,9 +175,11 @@ def calculate_system_components(
     apparent_power_kva = peak_power_demand / power_factor
     inverter_size_kva = apparent_power_kva * safety_margin
 
+    inverter_required_capacity = inverter_size_kva * 1000
+
     # Select the best inverter
     best_inverter = select_best_component(
-        2, inverter_size_kva * 1000
+        2, inverter_required_capacity
     )  # Convert kVA to W
 
     if best_inverter and best_inverter.capacity_w is not None:
@@ -320,6 +322,7 @@ def calculate_system_components(
         "total_vat": total_vat,
         "products": products,
         "panel_required_capacity": panel_required_capacity,
+        "inverter_required_capacity": inverter_required_capacity,
     }
 
 
