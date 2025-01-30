@@ -163,6 +163,9 @@ def calculate_system_components(
     else:
         number_of_panels = 0  # or another default value
 
+    # Retrieve band data from the database
+    band_data = Band.objects.get(id=price_band)
+    hours_per_day = band_data.hours_supply
     # Calculate hourly load assuming 12 hours/day usage (Band C scenario)
     hours_per_day = 12
     hourly_load = load_covered_by_solar / hours_per_day
