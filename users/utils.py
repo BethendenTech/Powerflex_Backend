@@ -30,9 +30,6 @@ def calculate_base_consumption(monthly_spend, band_group):
     # Retrieve band data from the database
     band_data = Band.objects.get(id=band_group)
 
-    print("band_data.price", band_data.price)
-    print("band_data.hours_supply", band_data.hours_supply)
-
     if band_data:
         price_per_kwh = band_data.price
         hours_per_day = band_data.hours_supply
@@ -148,8 +145,6 @@ def calculate_system_components(
         solar_energy_required / 6
     )  # Assuming 6 sun hours per day
 
-    print("panel_required_output_kwh", panel_required_output_kwh)
-
     best_panel = select_best_component(1, panel_required_output_kwh * 1000)
 
     # Check if the capacity_w value is not null or empty
@@ -169,22 +164,15 @@ def calculate_system_components(
     hours_per_day = band_data.hours_supply
     hourly_load = load_covered_by_solar / hours_per_day
 
-    print("hours_per_day", hours_per_day)
-    print("hourly_load", hourly_load)
-
     # Estimate peak power demand with diversity factor (e.g., 1.5 for simultaneous usage)
     diversity_factor = 1.5
     peak_power_demand = hourly_load * diversity_factor  # in kW
-
-    print("peak_power_demand", peak_power_demand)
 
     # Apply power factor correction and safety margin
     power_factor = 0.8  # Typical residential value
     safety_margin = 1.2  # 20% safety margin
     apparent_power_kva = peak_power_demand / power_factor
     inverter_size_kva = apparent_power_kva * safety_margin
-
-    print("inverter_size_kva", inverter_size_kva)
 
     # Select the best inverter
     best_inverter = select_best_component(
@@ -254,8 +242,6 @@ def calculate_system_components(
         "total_inverter_cost_naira": round(total_inverter_cost_usd * exchange_rate),
         "total_battery_cost_naira": round(total_battery_cost_usd * exchange_rate),
     }
-
-    print("products", products)
 
     total_cost_usd = (
         total_panel_cost_usd + total_inverter_cost_usd + total_battery_cost_usd
@@ -417,8 +403,6 @@ def calculate_quote(
         band_group,
         is_finance,
     )
-
-    print("system_details", system_details)
 
     # Financing calculations based on total cost without profit margin
     financing_details = calculate_financing(system_details["total_cost_naira"])
