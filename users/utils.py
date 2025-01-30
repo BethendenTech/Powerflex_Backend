@@ -108,18 +108,16 @@ def refine_total_load(base_consumption_kwh_per_day, appliance_consumption_kwh_pe
 
 # Function to select the best component based on minimum requirements
 def select_best_component(category_id, required_capacity):
+    # Try to find the closest suitable component with capacity >= required_capacity
+    suitable_component = (
+        Product.objects.filter(
+            category_id=category_id, capacity_w__gte=required_capacity
+        )
+        .order_by("capacity_w")  # Sorts in ascending order by default
+        .first()
+    )  # Gets the closest match
 
-    # If no suitable component found, get the product with the minimum excess capacity
-    suitable_component = Product.objects.filter(category_id=category_id).aggregate(
-        Min("capacity_w")
-    )
-
-    if suitable_component:
-        return Product.objects.filter(
-            category_id=category_id, capacity_w=suitable_component["capacity_w__min"]
-        ).first()
-
-    return None  # Return None if no product exists
+    return suitable_component  # Returns None if no match is found
 
 
 # Function to calculate the system's components
