@@ -323,6 +323,7 @@ def calculate_system_components(
         "products": products,
         "panel_required_capacity": panel_required_capacity,
         "inverter_required_capacity": inverter_required_capacity,
+        "solar_energy_required": solar_energy_required,
     }
 
 

@@ -75,6 +75,7 @@ class QuoteSerializer(serializers.Serializer):
     panel_required_output_kwh = serializers.JSONField(read_only=True)
     panel_required_capacity = serializers.JSONField(read_only=True)
     inverter_required_capacity = serializers.JSONField(read_only=True)
+    solar_energy_required = serializers.JSONField(read_only=True)
 
     def create(self, validated_data):
         calculated_values = calculate_quote(
