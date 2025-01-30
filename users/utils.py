@@ -107,7 +107,6 @@ def refine_total_load(base_consumption_kwh_per_day, appliance_consumption_kwh_pe
         )
         return refined_daily_load_kwh
 
-
 # Function to select the best component based on minimum requirements
 def select_best_component(category_id, required_capacity):
     # Try to find a suitable component with capacity >= required_capacity
@@ -149,6 +148,8 @@ def calculate_system_components(
         solar_energy_required / 6
     )  # Assuming 6 sun hours per day
 
+    print("panel_required_output_kwh", panel_required_output_kwh)
+
     best_panel = select_best_component(1, panel_required_output_kwh * 1000)
 
     # Check if the capacity_w value is not null or empty
@@ -168,15 +169,22 @@ def calculate_system_components(
     hours_per_day = band_data.hours_supply
     hourly_load = load_covered_by_solar / hours_per_day
 
+    print("hours_per_day", hours_per_day)
+    print("hourly_load", hourly_load)
+
     # Estimate peak power demand with diversity factor (e.g., 1.5 for simultaneous usage)
     diversity_factor = 1.5
     peak_power_demand = hourly_load * diversity_factor  # in kW
+
+    print("peak_power_demand", peak_power_demand)
 
     # Apply power factor correction and safety margin
     power_factor = 0.8  # Typical residential value
     safety_margin = 1.2  # 20% safety margin
     apparent_power_kva = peak_power_demand / power_factor
     inverter_size_kva = apparent_power_kva * safety_margin
+
+    print("inverter_size_kva", inverter_size_kva)
 
     # Select the best inverter
     best_inverter = select_best_component(
@@ -198,7 +206,9 @@ def calculate_system_components(
         effective_battery_capacity_kwh = battery_capacity_kwh / (
             float(best_battery.dod) / 100 * float(best_battery.efficiency) / 100
         )
-        number_of_batteries = effective_battery_capacity_kwh / float(best_battery.capacity_w)
+        number_of_batteries = effective_battery_capacity_kwh / float(
+            best_battery.capacity_w
+        )
     else:
         effective_battery_capacity_kwh = 0
         number_of_batteries = 0
