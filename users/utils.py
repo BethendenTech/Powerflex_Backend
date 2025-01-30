@@ -107,6 +107,7 @@ def refine_total_load(base_consumption_kwh_per_day, appliance_consumption_kwh_pe
         )
         return refined_daily_load_kwh
 
+
 # Function to select the best component based on minimum requirements
 def select_best_component(category_id, required_capacity):
     # Try to find a suitable component with capacity >= required_capacity
@@ -135,7 +136,6 @@ def calculate_system_components(
     price_band,
     is_finance,
 ):
-
     if coverage_percentage and coverage_percentage is not None:
         load_covered_by_solar = total_load_kwh * (coverage_percentage / 100)
         solar_energy_required = load_covered_by_solar / (1 - 0.20)  # 20% system losses
@@ -313,6 +313,8 @@ def calculate_system_components(
 
     return {
         "total_load_kwh": total_load_kwh,
+        "inverter_size_kva": inverter_size_kva,
+        "panel_required_output_kwh": panel_required_output_kwh,
         "load_covered_by_solar": load_covered_by_solar,
         "total_equipments": round(
             number_of_panels + number_of_inverters + number_of_batteries
