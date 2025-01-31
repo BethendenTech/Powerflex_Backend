@@ -229,8 +229,6 @@ def calculate_system_components(
     total_inverter_cost_usd = number_of_inverters * inverter_price_usd
     total_battery_cost_usd = number_of_batteries * battery_price_usd
 
-    print("best_panel", best_panel)
-
     products = {
         "best_panel": safe_model_to_dict(best_panel),
         "best_inverter": safe_model_to_dict(best_inverter),
@@ -305,6 +303,8 @@ def calculate_system_components(
 
     total_vat = total_cost_with_profit * vat / 100
 
+    price_band_data = Band.objects.get(id=price_band)
+
     return {
         "total_load_kwh": total_load_kwh,
         "inverter_size_kva": inverter_size_kva,
@@ -322,13 +322,13 @@ def calculate_system_components(
         "installer_commission_amount": round(installer_commission_amount),
         "profit_margin": round(profit_margin),
         "profit_margin_amount": round(profit_margin_amount),
-        "price_band": price_band,
         "vat": vat,
         "total_vat": total_vat,
         "products": products,
         "panel_required_capacity": panel_required_capacity,
         "inverter_required_capacity": inverter_required_capacity,
         "solar_energy_required": solar_energy_required,
+        "price_band_data": safe_model_to_dict(price_band_data),
     }
 
 
