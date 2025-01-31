@@ -146,7 +146,8 @@ def calculate_system_components(
         solar_energy_required / 6
     )  # Assuming 6 sun hours per day
 
-    panel_required_capacity = panel_required_output_kwh * 1000  # Convert to W
+    # panel_required_capacity = panel_required_output_kwh * 1000  # Convert to W
+    panel_required_capacity = panel_required_output_kwh  # Convert to W
     best_panel = select_best_component(1, panel_required_capacity)
 
     # Check if the capacity_w value is not null or empty
@@ -207,6 +208,7 @@ def calculate_system_components(
 
     # Check if the prices are not null or empty
 
+  
     if best_panel and best_panel.price_usd is not None:
         panel_price_usd = float(best_panel.price_usd)
     else:
@@ -227,6 +229,7 @@ def calculate_system_components(
     total_inverter_cost_usd = number_of_inverters * inverter_price_usd
     total_battery_cost_usd = number_of_batteries * battery_price_usd
 
+    print("best_panel", best_panel)
 
     products = {
         "best_panel": safe_model_to_dict(best_panel),
