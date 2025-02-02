@@ -16,8 +16,8 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(Band)
 class BrandAdmin(admin.ModelAdmin):
-    list_display = ["name", "hours_supply", "price"]
-    search_fields = ["name", "hours_supply", "price"]
+    list_display = ["name", "hours_supply", "price", "tariff"]
+    search_fields = ["name", "hours_supply", "price", "tariff"]
 
 
 @admin.register(Product)
