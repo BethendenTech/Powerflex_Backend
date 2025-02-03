@@ -7,3 +7,4 @@ django-jazzmin
 djangorestframework
 gunicorn
 whitenoise
+pillow
