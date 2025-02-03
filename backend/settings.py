@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "product",
     "setting",
     "cms",
+    "package",
     "rest_framework",
     "corsheaders",
 ]
