@@ -389,6 +389,29 @@ def calculate_quote(
     else:
         exchange_rate = 1800
 
+    bandObject = Band.objects.get(id=band_group)
+
+    if bandObject:
+        tariff = float(bandObject.tariff or 0)
+        hourPerDay = float(bandObject.hours_supply or 0)
+    else:
+        raise ValueError("Error: Band data not found for the specified group")
+
+    monthlyEnergyConsumption = float(monthly_spend) / tariff
+
+    print("monthlyEnergyConsumption =", monthlyEnergyConsumption)
+    dailyEnergyConsumption = monthlyEnergyConsumption * 1000 / 30
+    print("dailyEnergyConsumption =", dailyEnergyConsumption)
+    totalWatts = dailyEnergyConsumption / hourPerDay
+    print("totalWatts =", totalWatts)
+
+    systemSetting = Settings.objects.first()
+
+    if systemSetting and systemSetting.exchange_rate is not None:
+        exchange_rate = float(systemSetting.exchange_rate)
+    else:
+        exchange_rate = 1800
+
     # Base consumption calculation
     base_consumption_kwh_per_day = calculate_base_consumption(monthly_spend, band_group)
 
