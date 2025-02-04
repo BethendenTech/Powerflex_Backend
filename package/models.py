@@ -7,6 +7,7 @@ class Package(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to="package_images/", blank=True, null=True)
+    runtime = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
     # Define a ManyToMany relationship with Appliance through PackageAppliances
