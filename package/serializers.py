@@ -11,6 +11,7 @@ class PackageSerializer(serializers.ModelSerializer):
             "image",
             "price",
             "discount_price",
+            "runtime",
             "description",
             "appliances",
         ]
