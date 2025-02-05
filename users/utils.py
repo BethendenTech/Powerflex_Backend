@@ -179,6 +179,48 @@ def determine_system_voltage(daily_energy_Wh):
         return 48
 
 
+#EMMANUEL CHANGED HERE
+# Function to select the best component that meets or exceeds required power
+def select_best_component(category_id, required_capacity, system_voltage=None):
+    """
+    Selects the best single component or multiple identical components 
+    to efficiently meet or exceed the required capacity.
+
+    Parameters:
+        category_id (int): Component category (1=Solar Panel, 2=Inverter, 3=Battery).
+        required_capacity (float): The total required power in watts (W).
+        system_voltage (int, optional): Required voltage (for inverters & batteries).
+
+    Returns:
+        dict: Selected component and the number of identical units required.
+    """
+    query = Product.objects.filter(category_id=category_id)
+
+    if system_voltage is not None and category_id in [2, 3]:  # Inverters & Batteries only
+        query = query.filter(voltage=system_voltage)
+
+    available_components = list(query.order_by("-capacity_w"))  # Sort by descending power
+
+    if not available_components:
+        raise ValueError(f"No suitable component found for category {category_id} and voltage {system_voltage}")
+
+    for component in available_components:
+        component_wattage = component.capacity_w
+
+        # If a single unit is enough, select it
+        if component_wattage >= required_capacity:
+            return {"component": component, "quantity": 1}
+
+        # If a single unit isn't enough, determine the required quantity
+        num_units = required_capacity // component_wattage
+        if required_capacity % component_wattage != 0:
+            num_units += 1  # Round up to ensure sufficient capacity
+
+        return {"component": component, "quantity": num_units}
+
+    raise ValueError(f"Unable to meet {required_capacity}W requirement with available components.")
+
+
 # Function to calculate the system's components
 def calculate_system_components(
     total_load_kwh,
