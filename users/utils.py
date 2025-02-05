@@ -110,31 +110,76 @@ def refine_total_load(base_consumption_kwh_per_day, appliance_consumption_kwh_pe
         return refined_daily_load_kwh
 
 
-# Function to select the best component based on minimum requirements
+# # Function to select the best component or multiple identical components
 def select_best_component(category_id, required_capacity, system_voltage=None):
-    query = Product.objects.filter(
-        category_id=category_id, capacity_w__gte=required_capacity
+    """
+    Selects the best single component or multiple identical components
+    to efficiently meet or exceed the required capacity.
+
+    Parameters:
+        category_id (int): Component category (1=Solar Panel, 2=Inverter, 3=Battery).
+        required_capacity (float): The total required power in watts (W).
+        system_voltage (int, optional): Required voltage (for inverters & batteries).
+
+    Returns:
+        dict: Selected component and the number of identical units required.
+    """
+    query = Product.objects.filter(category_id=category_id)
+
+    if system_voltage is not None and category_id in [
+        2,
+        3,
+    ]:  # Inverters & Batteries only
+        query = query.filter(voltage__gte=system_voltage)
+
+    available_components = list(
+        query.order_by("-capacity_w")
+    )  # Sort by highest capacity first
+
+    print("available_components", category_id, available_components)
+
+    if not available_components:
+        raise ValueError(
+            f"No suitable component found for category {category_id} and voltage {system_voltage}"
+        )
+
+    best_component = None
+    num_units_required = 0
+
+    for component in available_components:
+        component_wattage = component.capacity_w
+
+        # If a single unit is enough, select it
+        if component_wattage >= required_capacity:
+            return {"component": component, "quantity": 1}
+
+        # If not, calculate how many of this component type are required
+        num_units_required = -(
+            -required_capacity // component_wattage
+        )  # Equivalent to ceil(required_capacity / component_wattage)
+        best_component = component
+        break  # Stop at the first valid component
+
+    if best_component:
+        return {"component": best_component, "quantity": num_units_required}
+
+    raise ValueError(
+        f"Unable to meet {required_capacity}W requirement with available components."
     )
-
-    # Filter for matching system voltage (if applicable)
-    if system_voltage is not None:
-        query = query.filter(voltage=system_voltage)
-
-    return query.order_by("capacity_w").first()
 
 
 # Function to determine the best system voltage based on daily energy consumption
 def determine_system_voltage(daily_energy_Wh):
-    if daily_energy_Wh <= 2000 * 1000:
-        return 12  # <2kWh
-    elif daily_energy_Wh <= 5000 * 1000:
-        return 24  # 2-5kWh
-    return 48  # >5kWh
+    print("daily_energy_Wh", daily_energy_Wh)
+    if daily_energy_Wh <= 2000:  # <2kWh
+        return 12
+    elif daily_energy_Wh <= 5000:  # 2-5kWh
+        return 24
+    else:  # >5kWh
+        return 48
 
 
 # Function to calculate the system's components
-
-
 def calculate_system_components(
     total_load_kwh,
     coverage_percentage,
@@ -148,17 +193,19 @@ def calculate_system_components(
     Calculates the best system components (inverter, battery, and solar panel)
     based on the refined total energy load and available products.
     """
-
-    # ======= Step 1: Determine the Energy Covered by Solar =======
+    print("coverage_percentage", coverage_percentage)
+    # **Step 1: Determine the Energy Covered by Solar**
     load_covered_by_solar = total_load_kwh * (coverage_percentage / 100)
-
-    # Include system losses
     solar_energy_required = load_covered_by_solar
 
-    # ======= Step 2: Select System Voltage Based on Energy Requirement =======
+    print("solar_energy_required", solar_energy_required)
+
+    # **Step 2: Select System Voltage**
     system_voltage = determine_system_voltage(solar_energy_required * 1000)
 
-    # ======= Step 3: Solar Panel Sizing =======
+    print("system_voltage", system_voltage)
+
+    # **Step 3: Solar Panel Selection**
     solar_efficiency = 0.8
     peak_sun_hours = 4
     solar_losses = 1.05
@@ -167,69 +214,82 @@ def calculate_system_components(
     solar_power_required_kW = (solar_energy_required * future_growth_factor) / (
         peak_sun_hours * solar_efficiency
     )
-    solar_power_required_losses_adj_kW = solar_power_required_kW * solar_losses
-    solar_power_required_losses_adj_W = solar_power_required_losses_adj_kW * 1000
 
-    best_panel = select_best_component(
-        1, solar_power_required_losses_adj_W
-    )  # Category ID 1 = Solar Panels
+    print("solar_power_required_kW", solar_power_required_kW)
 
+    solar_power_required_losses_adj_W = solar_power_required_kW * solar_losses * 1000
+
+    print("solar_power_required_losses_adj_W", solar_power_required_losses_adj_W)
+
+    best_panel = select_best_component(1, solar_power_required_losses_adj_W)
+    print("best_panel", best_panel)
+    print('best_panel["component"].capacity_w', best_panel["component"].capacity_w)
     number_of_panels = (
-        solar_power_required_losses_adj_W / best_panel.capacity_w
-        if best_panel and best_panel.capacity_w
+        solar_power_required_losses_adj_W / best_panel["component"].capacity_w
+        if best_panel and best_panel["component"].capacity_w > 0
         else 0
     )
 
-    # ======= Step 4: Inverter Sizing (Filtered by System Voltage) =======
+    print("number_of_panels", number_of_panels)
+
+    # **Step 4: Inverter Selection**
     best_inverter = select_best_component(
         2, solar_power_required_losses_adj_W, system_voltage
-    )  # Category ID 2 = Inverters
+    )
+
+    print("best_inverter", best_inverter)
 
     if best_inverter:
-        efficiency_inverter = best_inverter.efficiency or 0.9  # Default if missing
+        efficiency_inverter = (
+            best_inverter["component"].efficiency
+            if best_inverter["component"].efficiency
+            else 0.9
+        )
+        print("efficiency_inverter", efficiency_inverter)
         power_factor = 0.8
         safety_margin = 1.2
 
         inverter_size_VA = (solar_power_required_losses_adj_W * safety_margin) / (
             efficiency_inverter * power_factor
         )
-        number_of_inverters = (
-            inverter_size_VA / best_inverter.capacity_w
-            if best_inverter.capacity_w
-            else 0
-        )
+        number_of_inverters = best_inverter["quantity"]
     else:
         efficiency_inverter = 0.9
         inverter_size_VA = 0
         number_of_inverters = 0
 
-    # ======= Step 5: Battery Sizing (Filtered by System Voltage) =======
-    best_battery = select_best_component(
-        3, solar_energy_required * 1000, system_voltage
-    )  # Category ID 3 = Batteries
+    print("inverter_size_VA", inverter_size_VA)
 
+    # *Step 5: Battery Selection (Using Ah instead of W)*
+
+    battery_energy_required_Wh = solar_energy_required * 1000 * future_growth_factor
+
+    # Convert required energy to Ah (instead of W)
+    battery_capacity_Ah_required = battery_energy_required_Wh / (
+        system_voltage * battery_autonomy_hours
+    )
+    print("battery_capacity_Ah_required", battery_capacity_Ah_required)
+    # Select best battery using Ah directly from the database
+
+    best_battery = select_best_component(
+        3, battery_capacity_Ah_required, system_voltage
+    )
+
+    print("best_battery", best_battery)
     if best_battery:
-        battery_efficiency = (
-            best_battery.efficiency or 0.9
-        )  # Use value from DB or default
-        battery_voltage = (
-            best_battery.voltage or system_voltage
-        )  # Ensure voltage matches system voltage
-        battery_charge_ah = (
-            best_battery.capacity_ah or 200
-        )  # Use value from DB or default
+        battery_efficiency = best_battery["component"].efficiency or 0.9
+        battery_voltage = best_battery["component"].voltage or system_voltage
+        battery_charge_ah = best_battery["component"].capacity_ah or 200
+
         depth_of_discharge = 0.6
         temperature_factor = 0.95
 
-        battery_energy_required_Wh = solar_energy_required * 1000 * future_growth_factor
         daily_system_charge_required_Ah = battery_energy_required_Wh / battery_voltage
         battery_capacity_Ah = daily_system_charge_required_Ah / (
             depth_of_discharge * battery_efficiency * temperature_factor
         )
 
-        batteries_in_series = (
-            system_voltage / battery_voltage
-        )  # Now matches the selected battery
+        batteries_in_series = system_voltage / battery_voltage
         batteries_in_parallel = battery_capacity_Ah / battery_charge_ah
         total_batteries_needed = batteries_in_series * batteries_in_parallel
     else:
@@ -243,10 +303,18 @@ def calculate_system_components(
         batteries_in_series = 0
         batteries_in_parallel = 0
 
-    # ======= Step 6: Retrieve Component Prices & Calculate Costs =======
-    panel_price_usd = float(best_panel.price_usd) if best_panel else 0
-    inverter_price_usd = float(best_inverter.price_usd) if best_inverter else 0
-    battery_price_usd = float(best_battery.price_usd) if best_battery else 0
+    print("battery_capacity_Ah", battery_capacity_Ah)
+
+    print("total_batteries_needed", total_batteries_needed)
+
+    # **Step 6: Retrieve Prices & Calculate Costs**
+    panel_price_usd = float(best_panel["component"].price_usd or 0) if best_panel else 0
+    inverter_price_usd = (
+        float(best_inverter["component"].price_usd or 0) if best_inverter else 0
+    )
+    battery_price_usd = (
+        float(best_battery["component"].price_usd or 0) if best_battery else 0
+    )
 
     total_cost_usd = (
         (number_of_panels * panel_price_usd)
@@ -269,9 +337,6 @@ def calculate_system_components(
         "total_batteries_needed": round(total_batteries_needed, 2),
         "solar_power_required_kW": round(solar_power_required_kW, 2),
         "load_covered_by_solar": round(load_covered_by_solar, 2),
-        "solar_power_required_losses_adj_kW": round(
-            solar_power_required_losses_adj_kW, 2
-        ),
         "solar_power_required_losses_adj_W": round(
             solar_power_required_losses_adj_W, 2
         ),
@@ -280,11 +345,10 @@ def calculate_system_components(
         "number_of_inverters": round(number_of_inverters, 2),
         "total_cost_usd": round(total_cost_usd, 2),
         "total_cost_naira": round(total_cost_naira, 2),
-        "total_cost_with_profit": round(total_cost_usd, 2),
         "products": {
-            "best_panel": safe_model_to_dict(best_panel),
-            "best_inverter": safe_model_to_dict(best_inverter),
-            "best_battery": safe_model_to_dict(best_battery),
+            "best_panel": safe_model_to_dict(best_panel["component"]),
+            "best_inverter": safe_model_to_dict(best_inverter["component"]),
+            "best_battery": safe_model_to_dict(best_battery["component"]),
         },
     }
 
