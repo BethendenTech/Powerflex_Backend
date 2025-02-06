@@ -313,18 +313,11 @@ def calculate_system_components(
     # *Step 5: Battery Selection (Using Capacity in W)*
     battery_energy_required_Wh = solar_energy_required * 1000 * future_growth_factor
 
-    depth_of_discharge = 0.6
+    depth_of_discharge = 0.8
     temperature_factor = 0.95
     battery_efficiency = 0.9  # Default value, will be updated after battery selection
 
     # Convert required battery energy (Wh) to required capacity in W
-    print("battery_energy_required_Wh", battery_energy_required_Wh)
-    print(
-        "battery_efficiency==",
-        battery_efficiency * depth_of_discharge * temperature_factor,
-    )
-
-    print("battery_autonomy_hours", battery_autonomy_hours)
 
     battery_capacity_W = (
         (battery_autonomy_hours / 24)
@@ -338,23 +331,32 @@ def calculate_system_components(
 
     if best_battery:
         battery_efficiency = best_battery["component"].efficiency or 0.9
+        battery_charge_ah = best_battery["component"].capacity_ah or 200
+        print("battery_efficiency", battery_efficiency)
         battery_voltage = best_battery["component"].voltage or system_voltage
+        print("battery_voltage", battery_voltage)
         battery_capacity_W = best_battery[
             "component"
         ].capacity_w  # Fetching directly from DB
+        print("battery_capacity_W", battery_capacity_W)
 
         # Convert W to Ah
-        battery_charge_ah = battery_capacity_W / battery_voltage
 
         daily_system_charge_required_Ah = battery_energy_required_Wh / battery_voltage
-
+        print("daily_system_charge_required_Ah", daily_system_charge_required_Ah)
+        print("depth_of_discharge", depth_of_discharge)
         battery_capacity_Ah = daily_system_charge_required_Ah / (
             depth_of_discharge * battery_efficiency * temperature_factor
         )
 
+        print("battery_capacity_Ah", battery_capacity_Ah)
+
         batteries_in_series = system_voltage / battery_voltage
+        print("batteries_in_series", batteries_in_series)
         batteries_in_parallel = battery_capacity_Ah / battery_charge_ah
+        print("batteries_in_parallel", batteries_in_parallel)
         total_batteries_needed = batteries_in_series * batteries_in_parallel
+        print("total_batteries_needed", total_batteries_needed)
     else:
         battery_efficiency = 0.9
         battery_voltage = system_voltage
