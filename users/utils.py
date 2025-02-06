@@ -46,10 +46,9 @@ def calculate_base_consumption(monthly_spend, band_group):
 
     base_daily_consumption_kwh = float(base_consumption_kwh_per_month) / 30
 
-    return base_daily_consumption_kwh
     # Adjust base consumption to the actual number of hours supply for the band group
-    # adjusted_daily_consumption_kwh = base_daily_consumption_kwh * (24 / hours_per_day)
-    # return adjusted_daily_consumption_kwh
+    adjusted_daily_consumption_kwh = base_daily_consumption_kwh * (24 / hours_per_day)
+    return adjusted_daily_consumption_kwh
 
 
 # Function to calculate appliance-based consumption (optional)
@@ -319,10 +318,20 @@ def calculate_system_components(
     battery_efficiency = 0.9  # Default value, will be updated after battery selection
 
     # Convert required battery energy (Wh) to required capacity in W
-    battery_capacity_W = battery_energy_required_Wh / (
-        battery_efficiency * depth_of_discharge * temperature_factor
+    print("battery_energy_required_Wh", battery_energy_required_Wh)
+    print(
+        "battery_efficiency==",
+        battery_efficiency * depth_of_discharge * temperature_factor,
     )
 
+    print("battery_autonomy_hours", battery_autonomy_hours)
+
+    battery_capacity_W = (
+        (battery_autonomy_hours / 24)
+        * battery_energy_required_Wh
+        / (battery_efficiency * depth_of_discharge * temperature_factor)
+    )
+    print("battery_capacity_W", battery_capacity_W)
     # Select best battery using W (Watts)
     best_battery = select_best_component(3, battery_capacity_W, system_voltage)
     print("best_battery", best_battery)
@@ -464,22 +473,6 @@ def calculate_quote(
         exchange_rate = float(systemSetting.exchange_rate)
     else:
         exchange_rate = 1800
-
-    bandObject = Band.objects.get(id=band_group)
-
-    if bandObject:
-        tariff = float(bandObject.tariff or 0)
-        hourPerDay = float(bandObject.hours_supply or 0)
-    else:
-        raise ValueError("Error: Band data not found for the specified group")
-
-    monthlyEnergyConsumption = float(monthly_spend) / tariff
-
-    print("monthlyEnergyConsumption =", monthlyEnergyConsumption)
-    dailyEnergyConsumption = monthlyEnergyConsumption * 1000 / 30
-    print("dailyEnergyConsumption =", dailyEnergyConsumption)
-    totalWatts = dailyEnergyConsumption / hourPerDay
-    print("totalWatts =", totalWatts)
 
     systemSetting = Settings.objects.first()
 
