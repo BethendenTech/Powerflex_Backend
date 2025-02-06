@@ -179,11 +179,11 @@ def determine_system_voltage(daily_energy_Wh):
         return 48
 
 
-#EMMANUEL CHANGED HERE
+# EMMANUEL CHANGED HERE
 # Function to select the best component that meets or exceeds required power
 def select_best_component(category_id, required_capacity, system_voltage=None):
     """
-    Selects the best single component or multiple identical components 
+    Selects the best single component or multiple identical components
     to efficiently meet or exceed the required capacity.
 
     Parameters:
@@ -196,13 +196,20 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
     """
     query = Product.objects.filter(category_id=category_id)
 
-    if system_voltage is not None and category_id in [2, 3]:  # Inverters & Batteries only
+    if system_voltage is not None and category_id in [
+        2,
+        3,
+    ]:  # Inverters & Batteries only
         query = query.filter(voltage=system_voltage)
 
-    available_components = list(query.order_by("-capacity_w"))  # Sort by descending power
+    available_components = list(
+        query.order_by("-capacity_w")
+    )  # Sort by descending power
 
     if not available_components:
-        raise ValueError(f"No suitable component found for category {category_id} and voltage {system_voltage}")
+        raise ValueError(
+            f"No suitable component found for category {category_id} and voltage {system_voltage}"
+        )
 
     for component in available_components:
         component_wattage = component.capacity_w
@@ -218,7 +225,9 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
 
         return {"component": component, "quantity": num_units}
 
-    raise ValueError(f"Unable to meet {required_capacity}W requirement with available components.")
+    raise ValueError(
+        f"Unable to meet {required_capacity}W requirement with available components."
+    )
 
 
 # Function to calculate the system's components
@@ -302,31 +311,34 @@ def calculate_system_components(
 
     print("inverter_size_VA", inverter_size_VA)
 
-    # *Step 5: Battery Selection (Using Ah instead of W)*
-
+    # *Step 5: Battery Selection (Using Capacity in W)*
     battery_energy_required_Wh = solar_energy_required * 1000 * future_growth_factor
 
-    # Convert required energy to Ah (instead of W)
-    battery_capacity_Ah_required = battery_energy_required_Wh / (
-        system_voltage * battery_autonomy_hours
-    )
-    print("battery_capacity_Ah_required", battery_capacity_Ah_required)
-    # Select best battery using Ah directly from the database
+    depth_of_discharge = 0.6
+    temperature_factor = 0.95
+    battery_efficiency = 0.9  # Default value, will be updated after battery selection
 
-    best_battery = select_best_component(
-        3, battery_capacity_Ah_required, system_voltage
+    # Convert required battery energy (Wh) to required capacity in W
+    battery_capacity_W = battery_energy_required_Wh / (
+        battery_efficiency * depth_of_discharge * temperature_factor
     )
 
+    # Select best battery using W (Watts)
+    best_battery = select_best_component(3, battery_capacity_W, system_voltage)
     print("best_battery", best_battery)
+
     if best_battery:
         battery_efficiency = best_battery["component"].efficiency or 0.9
         battery_voltage = best_battery["component"].voltage or system_voltage
-        battery_charge_ah = best_battery["component"].capacity_ah or 200
+        battery_capacity_W = best_battery[
+            "component"
+        ].capacity_w  # Fetching directly from DB
 
-        depth_of_discharge = 0.6
-        temperature_factor = 0.95
+        # Convert W to Ah
+        battery_charge_ah = battery_capacity_W / battery_voltage
 
         daily_system_charge_required_Ah = battery_energy_required_Wh / battery_voltage
+
         battery_capacity_Ah = daily_system_charge_required_Ah / (
             depth_of_discharge * battery_efficiency * temperature_factor
         )
@@ -342,6 +354,7 @@ def calculate_system_components(
         battery_energy_required_Wh = 0
         daily_system_charge_required_Ah = 0
         battery_capacity_Ah = 0
+        battery_capacity_W = 0
         batteries_in_series = 0
         batteries_in_parallel = 0
 
