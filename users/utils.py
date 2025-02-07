@@ -345,9 +345,12 @@ def calculate_system_components(
         daily_system_charge_required_Ah = battery_energy_required_Wh / battery_voltage
         print("daily_system_charge_required_Ah", daily_system_charge_required_Ah)
         print("depth_of_discharge", depth_of_discharge)
-        battery_capacity_Ah = daily_system_charge_required_Ah / (
-            depth_of_discharge * battery_efficiency * temperature_factor
-        )
+        if depth_of_discharge * battery_efficiency * temperature_factor != 0:
+            battery_capacity_Ah = daily_system_charge_required_Ah / (
+                depth_of_discharge * battery_efficiency * temperature_factor
+            )
+        else:
+            battery_capacity_Ah = 0
 
         print("battery_capacity_Ah", battery_capacity_Ah)
 
