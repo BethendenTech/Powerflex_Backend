@@ -389,7 +389,62 @@ def calculate_system_components(
     )
     total_cost_naira = total_cost_usd * exchange_rate
 
+    systemSetting = Settings.objects.first()
+
+    if systemSetting and systemSetting.profit_margin_outright is not None:
+        profit_margin_outright = float(systemSetting.profit_margin_outright)
+    else:
+        profit_margin_outright = 30
+
+    if systemSetting and systemSetting.profit_margin_financing is not None:
+        profit_margin_financing = float(systemSetting.profit_margin_financing)
+    else:
+        profit_margin_financing = 20
+
+    if systemSetting and systemSetting.installation_margin is not None:
+        installation_margin = float(systemSetting.installation_margin)
+    else:
+        installation_margin = 15
+
+    if systemSetting and systemSetting.installer_commission is not None:
+        installer_commission = float(systemSetting.installer_commission)
+    else:
+        installer_commission = 2
+
+    # Miscellaneous and profit margin
+    installation_and_cabling = total_cost_naira * installation_margin / 100
+    installer_commission_amount = total_cost_naira * installer_commission / 100
+
+    if is_finance:
+        profit_margin = profit_margin_financing
+        profit_margin_amount = total_cost_naira * profit_margin_financing / 100
+    else:
+        profit_margin = profit_margin_outright
+        profit_margin_amount = total_cost_naira * profit_margin_outright / 100
+
+    # 20% profit margin calculate from back office
+    total_cost_with_profit = (
+        total_cost_naira
+        + installation_and_cabling
+        # + installer_commission_amount
+        + profit_margin_amount
+    )
+
+    if systemSetting and systemSetting.vat is not None:
+        vat = float(systemSetting.vat)
+    else:
+        vat = 7.5  # Default VAT rate if not found in settings
+
+    total_vat = total_cost_with_profit * vat / 100
+
+    price_band_data = Band.objects.get(id=band_group)
+
     return {
+        "total_load_kwh": total_load_kwh,
+        "load_covered_by_solar": load_covered_by_solar,
+        "total_equipments": round(
+            number_of_panels + number_of_inverters + total_batteries_needed
+        ),
         "system_voltage": system_voltage,
         "battery_voltage": battery_voltage,
         "battery_charge_ah": battery_charge_ah,
@@ -411,11 +466,20 @@ def calculate_system_components(
         "number_of_inverters": round(number_of_inverters, 2),
         "total_cost_usd": round(total_cost_usd, 2),
         "total_cost_naira": round(total_cost_naira, 2),
+        "installer_commission": round(installer_commission),
+        "installer_commission_amount": round(installer_commission_amount),
+        "installation_and_cabling": round(installation_and_cabling),
+        "total_cost_with_profit": round(total_cost_with_profit),
+        "profit_margin": round(profit_margin),
+        "profit_margin_amount": round(profit_margin_amount),
+        "vat": vat,
+        "total_vat": total_vat,
         "products": {
             "best_panel": safe_model_to_dict(best_panel["component"]),
             "best_inverter": safe_model_to_dict(best_inverter["component"]),
             "best_battery": safe_model_to_dict(best_battery["component"]),
         },
+        "price_band_data": safe_model_to_dict(price_band_data),
     }
 
 
@@ -447,7 +511,9 @@ def calculate_savings_and_roi(
     total_savings = monthly_savings * loan_term_months
 
     if total_cost_with_profit != 0:
-        roi = (total_savings / Decimal(total_cost_with_profit)) * 100  # ROI in percentage
+        roi = (
+            total_savings / Decimal(total_cost_with_profit)
+        ) * 100  # ROI in percentage
     else:
         roi = 0
 
