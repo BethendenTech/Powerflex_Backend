@@ -447,7 +447,7 @@ def calculate_savings_and_roi(
     total_savings = monthly_savings * loan_term_months
 
     if total_cost_with_profit != 0:
-        roi = (total_savings / total_cost_with_profit) * 100  # ROI in percentage
+        roi = (total_savings / Decimal(total_cost_with_profit)) * 100  # ROI in percentage
     else:
         roi = 0
 
@@ -518,7 +518,7 @@ def calculate_quote(
         monthly_spend,
         financing_details["monthly_payment"],
         loan_term_months,
-        system_details["total_cost_with_profit"],
+        system_details["total_cost_naira"],
     )
 
     system_details["savings_and_roi"] = savings_and_roi
