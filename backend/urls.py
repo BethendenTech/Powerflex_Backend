@@ -28,4 +28,5 @@ urlpatterns = [
     path("product/", include("product.urls")),
     path("cms/", include("cms.urls")),
     path("package/", include("package.urls")),
+    path("support/", include("support.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

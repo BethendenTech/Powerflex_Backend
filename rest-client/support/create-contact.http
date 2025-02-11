@@ -1,0 +1,12 @@
+POST {{baseUrl}}support/create-contact/ HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "email": "john.doe@example.com",
+  "phone": "123-456-7890",
+  "subject": "Test Subject",
+  "message": "This is a test message."
+}
