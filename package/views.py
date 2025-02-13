@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from .models import Package
 from .serializers import PackageSerializer
 
-
 # Create your views here.
 @api_view(["GET"])
 def package_list(request):
