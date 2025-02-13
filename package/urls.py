@@ -4,5 +4,5 @@ from .views import package_list, package_detail
 
 urlpatterns = [
     path("packages/", package_list, name="package-list"),
-    path("packages/<int:package_id>/", package_detail, name="package-detail"),
+    path("packages/<int:pk>/", package_detail, name="package-detail"),
 ]
