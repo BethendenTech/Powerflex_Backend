@@ -1,0 +1,8 @@
+POST {{baseUrl}}package/package-request/ HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "package_id": 1,
+    "is_finance": true
+}
