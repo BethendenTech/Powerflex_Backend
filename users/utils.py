@@ -43,12 +43,15 @@ def calculate_base_consumption(monthly_spend, band_group):
 
     # Calculate base consumption considering the hours of electricity supply
     base_consumption_kwh_per_month = float(monthly_spend) / price_per_kwh
+    print("base_consumption_kwh_per_month", base_consumption_kwh_per_month)
 
     base_daily_consumption_kwh = float(base_consumption_kwh_per_month) / 30
+    print("base_daily_consumption_kwh", base_daily_consumption_kwh)
 
     # Adjust base consumption to the actual number of hours supply for the band group
-    adjusted_daily_consumption_kwh = base_daily_consumption_kwh * (24 / hours_per_day)
-    return adjusted_daily_consumption_kwh
+    # adjusted_daily_consumption_kwh = base_daily_consumption_kwh * (24 / hours_per_day)
+    # print("adjusted_daily_consumption_kwh",adjusted_daily_consumption_kwh)
+    return base_daily_consumption_kwh
 
 
 # Function to calculate appliance-based consumption (optional)
@@ -201,9 +204,9 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
     ]:  # Inverters & Batteries only
         query = query.filter(voltage=system_voltage)
 
-    available_components = list(
-        query.order_by("-capacity_w")
-    )  # Sort by descending power
+    available_components = list(query.order_by("capacity_w"))  # Sort by ascending power
+
+    print("available_components", available_components)
 
     if not available_components:
         raise ValueError(
@@ -243,7 +246,15 @@ def calculate_system_components(
     Calculates the best system components (inverter, battery, and solar panel)
     based on the refined total energy load and available products.
     """
+    print("monthly_spend", monthly_spend)
     print("coverage_percentage", coverage_percentage)
+
+    price_band_data = Band.objects.get(id=band_group)
+
+    total_watts = (total_load_kwh / price_band_data.hours_supply) * 1000
+
+    print("total_watts", total_watts)
+
     # **Step 1: Determine the Energy Covered by Solar**
     load_covered_by_solar = total_load_kwh * (coverage_percentage / 100)
     solar_energy_required = load_covered_by_solar
@@ -261,9 +272,11 @@ def calculate_system_components(
     solar_losses = 1.05
     future_growth_factor = 1.2
 
-    solar_power_required_kW = (solar_energy_required * future_growth_factor) / (
+    solar_power_required_kW = (total_load_kwh * future_growth_factor) / (
         peak_sun_hours * solar_efficiency
     )
+
+    print("solar_energy_required", solar_energy_required)
 
     print("solar_power_required_kW", solar_power_required_kW)
 
@@ -283,9 +296,7 @@ def calculate_system_components(
     print("number_of_panels", number_of_panels)
 
     # **Step 4: Inverter Selection**
-    best_inverter = select_best_component(
-        2, solar_power_required_losses_adj_W, system_voltage
-    )
+    best_inverter = select_best_component(2, total_watts, system_voltage)
 
     print("best_inverter", best_inverter)
 
@@ -299,7 +310,7 @@ def calculate_system_components(
         power_factor = 0.8
         safety_margin = 1.2
 
-        inverter_size_VA = (solar_power_required_losses_adj_W * safety_margin) / (
+        inverter_size_VA = (total_watts * safety_margin) / (
             efficiency_inverter * power_factor
         )
         number_of_inverters = best_inverter["quantity"]
@@ -440,8 +451,6 @@ def calculate_system_components(
 
     total_vat = total_cost_with_profit * vat / 100
 
-    price_band_data = Band.objects.get(id=band_group)
-
     return {
         "total_load_kwh": total_load_kwh,
         "load_covered_by_solar": load_covered_by_solar,
@@ -566,7 +575,7 @@ def calculate_quote(
     total_load_kwh_per_day = refine_total_load(
         base_consumption_kwh_per_day, appliance_consumption_kwh_per_day
     )
-
+    print("total_load_kwh_per_day", total_load_kwh_per_day)
     # System component calculations
     system_details = calculate_system_components(
         total_load_kwh_per_day,
