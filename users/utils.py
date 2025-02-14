@@ -426,21 +426,20 @@ def calculate_system_components(
         installer_commission = 2
 
     # Miscellaneous and profit margin
-    installation_and_cabling = total_cost_naira * installation_margin / 100
-    installer_commission_amount = total_cost_naira * installer_commission / 100
+    installation_and_cabling = (total_cost_naira * installation_margin) / 100
+    installer_commission_amount = (total_cost_naira * installer_commission) / 100
 
     if is_finance:
         profit_margin = profit_margin_financing
-        profit_margin_amount = total_cost_naira * profit_margin_financing / 100
+        profit_margin_amount = (total_cost_naira * profit_margin_financing) / 100
     else:
         profit_margin = profit_margin_outright
-        profit_margin_amount = total_cost_naira * profit_margin_outright / 100
+        profit_margin_amount = (total_cost_naira * profit_margin_outright) / 100
 
     # 20% profit margin calculate from back office
     total_cost_with_profit = (
         total_cost_naira
         + installation_and_cabling
-        # + installer_commission_amount
         + profit_margin_amount
     )
 
@@ -449,7 +448,9 @@ def calculate_system_components(
     else:
         vat = 7.5  # Default VAT rate if not found in settings
 
-    total_vat = total_cost_with_profit * vat / 100
+    total_vat = (total_cost_with_profit * vat) / 100
+
+
 
     return {
         "total_load_kwh": total_load_kwh,
