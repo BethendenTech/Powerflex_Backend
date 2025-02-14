@@ -1,8 +1,8 @@
-from datetime import date
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from product.utils import getPanel
+from product.utils import getPanel, getInverter, getBattery
+
 from .models import Package
 from .serializers import PackageSerializer
 from setting.models import Settings
@@ -40,13 +40,35 @@ def package_request(request):
 
     details = []
 
-    details.append({"title": "12kw Hybrid inverter", "quantity": 1, "cost": 100})
-    details.append({"title": "10kw Lithium battery", "quantity": 1, "cost": 100})
+    best_inverter = getInverter(total_capacity)
+
+    details.append(
+        {
+            "title": best_inverter[0]["inverter"],
+            "quantity": best_inverter[0]["quantity"],
+            "cost": best_inverter[0]["price"],
+        }
+    )
+
+    best_battery = getBattery(total_capacity)
+
+    details.append(
+        {
+            "title": best_battery[0]["battery"],
+            "quantity": best_battery[0]["quantity"],
+            "cost": best_battery[0]["price"],
+        }
+    )
 
     best_panel = getPanel(total_capacity)
-    print("best_panel", best_panel[0]["panel"])
 
-    details.append({"title": best_panel[0]["panel"], "quantity": best_panel[0]["quantity"], "cost": best_panel[0]["price"]})
+    details.append(
+        {
+            "title": best_panel[0]["panel"],
+            "quantity": best_panel[0]["quantity"],
+            "cost": best_panel[0]["price"],
+        }
+    )
 
     if systemSetting and systemSetting.installation_margin is not None:
         installation_margin = float(systemSetting.installation_margin)
