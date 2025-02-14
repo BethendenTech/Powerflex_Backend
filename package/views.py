@@ -31,9 +31,17 @@ def package_request(request):
     for appliance in package.appliances.all():
         total_capacity += appliance.power_w
 
+    details = []
+
+    details.append({"title": "12kw Hybrid inverter", "quantity": 1, "cost": 100})
+    details.append({"title": "10kw Lithium battery", "quantity": 1, "cost": 100})
+    details.append({"title": "500W solar panel", "quantity": 1, "cost": 100})
+    details.append({"title": "Accessories & Installation", "quantity": 1, "cost": 100})
+
     data = {
         "total_capacity": total_capacity,
         "total_cost": package.price,
+        "details": details,
     }
 
     return Response(data)
