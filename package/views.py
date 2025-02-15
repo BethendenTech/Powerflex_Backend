@@ -11,14 +11,16 @@ from setting.models import Settings
 # Create your views here.
 @api_view(["GET"])
 def package_list(request):
-    packages = Package.objects.prefetch_related("appliances").all()
+    packages = Package.objects.prefetch_related("appliances", "package_products").all()
     serializer = PackageSerializer(packages, many=True)
     return Response(serializer.data)
 
 
 @api_view(["GET"])
 def package_detail(request, pk):
-    package = Package.objects.prefetch_related("appliances").get(pk=pk)
+    package = Package.objects.prefetch_related("appliances", "package_products").get(
+        pk=pk
+    )
     serializer = PackageSerializer(package)
     return Response(serializer.data)
 

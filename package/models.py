@@ -34,3 +34,15 @@ class PackageAppliances(models.Model):
         return (
             f"{self.package.name} - {self.appliance.name} (Quantity: {self.quantity})"
         )
+
+
+class PackageProduct(models.Model):
+    package = models.ForeignKey(
+        Package, on_delete=models.CASCADE, related_name="package_products"
+    )
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return self.name
