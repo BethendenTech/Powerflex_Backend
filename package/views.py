@@ -1,10 +1,15 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 
 from product.utils import getPanel, getInverter, getBattery
 
-from .models import Package
-from .serializers import PackageSerializer
+from .models import Package, PackageOrder
+from .serializers import (
+    PackageSerializer,
+    PackageOrderSerializer,
+    PackageOrderViewSerializer,
+)
 from setting.models import Settings
 
 
@@ -96,3 +101,28 @@ def package_request(request):
     }
 
     return Response(data)
+
+
+@api_view(["POST"])
+def package_order(request):
+    serializer = PackageOrderSerializer(data=request.data)
+    if serializer.is_valid():
+        order = serializer.save()
+        if order:
+            return Response(
+                {"message": "Order created successfully", "order": serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                {"error": "Failed to save order"}, status=status.HTTP_400_BAD_REQUEST
+            )
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def package_order_detail(request, pk):
+    order = PackageOrder.objects.get(pk=pk)
+
+    serializer = PackageOrderViewSerializer(order)
+    return Response(serializer.data)
