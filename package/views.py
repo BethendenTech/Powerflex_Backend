@@ -9,6 +9,7 @@ from .serializers import (
     PackageSerializer,
     PackageOrderSerializer,
     PackageOrderViewSerializer,
+    PackageOrderUpdateSerializer,
 )
 from setting.models import Settings
 
@@ -123,6 +124,23 @@ def package_order(request):
 @api_view(["GET"])
 def package_order_detail(request, pk):
     order = PackageOrder.objects.get(pk=pk)
-
     serializer = PackageOrderViewSerializer(order)
     return Response(serializer.data)
+
+
+@api_view(["PUT"])
+def package_order_update(request, pk):
+    try:
+        order = PackageOrder.objects.get(pk=pk)
+    except PackageOrder.DoesNotExist:
+        return Response(
+            {"error": "PackageOrder not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    serializer = PackageOrderUpdateSerializer(
+        order, data=request.data, partial=True
+    )  # Allow partial updates
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

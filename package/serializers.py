@@ -91,3 +91,24 @@ class PackageOrderViewSerializer(serializers.ModelSerializer):
             "is_finance",
             "total_price",
         ]
+
+
+class PackageOrderUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PackageOrder
+        fields = [
+            "id",
+            "name",
+            "email",
+            "phone_number",
+            "is_finance",
+            "total_price",
+            "status",
+        ]
+
+    def update(self, instance, validated_data):
+        # Update all fields provided in the validated_data
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance

@@ -1,0 +1,7 @@
+PUT {{baseUrl}}package/package-order-update/12/ HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "status": "paid"
+}
