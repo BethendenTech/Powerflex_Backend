@@ -1,5 +1,11 @@
 from django.contrib import admin
-from .models import Package, PackageAppliances, PackageProduct, PackageOrder
+from .models import (
+    Package,
+    PackageAppliances,
+    PackageProduct,
+    PackageOrder,
+    PackageOrderApplication,
+)
 
 # Register your models here.
 
@@ -30,3 +36,31 @@ class PackageOrderAdmin(admin.ModelAdmin):
     list_display = ("package", "name", "email", "phone_number", "total_price")
     list_filter = ("package", "name", "email", "phone_number", "total_price")
     search_fields = ("package__name", "name", "email", "phone_number")
+
+
+@admin.register(PackageOrderApplication)
+class PackageOrderApplicationAdmin(admin.ModelAdmin):
+    list_display = (
+        "packageOrder",
+        "application_type",
+        "bvn",
+        "other_role",
+        "first_name",
+        "last_name",
+    )
+    list_filter = (
+        "packageOrder",
+        "application_type",
+        "bvn",
+        "other_role",
+        "first_name",
+        "last_name",
+    )
+    search_fields = (
+        "packageOrder__id",
+        "application_type",
+        "bvn",
+        "other_role",
+        "first_name",
+        "last_name",
+    )
