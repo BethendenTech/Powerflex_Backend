@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import Package, Appliance, PackageProduct, PackageOrder
+from .models import (
+    Package,
+    Appliance,
+    PackageProduct,
+    PackageOrder,
+    PackageOrderApplication,
+)
 
 
 class ApplianceSerializer(serializers.ModelSerializer):
@@ -112,3 +118,77 @@ class PackageOrderUpdateSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+
+class PackageApplicationSerializer(serializers.ModelSerializer):
+    package = serializers.PrimaryKeyRelatedField(queryset=Package.objects.all())
+    application_type = serializers.CharField(write_only=True)
+    bvn = serializers.CharField(write_only=True)
+    other_role = serializers.CharField(write_only=True)
+    first_name = serializers.CharField(write_only=True)
+    last_name = serializers.CharField(write_only=True)
+    house_number = serializers.CharField(write_only=True)
+    street_address = serializers.CharField(write_only=True)
+    landmark = serializers.CharField(write_only=True)
+    bus_stop = serializers.CharField(write_only=True)
+    occupation = serializers.CharField(write_only=True)
+    business_role = serializers.CharField(write_only=True)
+    business_name = serializers.CharField(write_only=True)
+    business_address = serializers.CharField(write_only=True)
+    town = serializers.CharField(write_only=True)
+    city = serializers.CharField(write_only=True)
+    state = serializers.CharField(write_only=True)
+    lga = serializers.CharField(write_only=True)
+    email = serializers.EmailField(write_only=True)
+    phone_number = serializers.CharField(write_only=True)
+    reference_phone1 = serializers.CharField(write_only=True)
+    reference_phone2 = serializers.CharField(write_only=True)
+    how_heard_about = serializers.CharField(write_only=True)
+    applicant_id_card = serializers.FileField(write_only=True)
+    company_registration_document = serializers.FileField(write_only=True)
+    bank_statements = serializers.FileField(write_only=True)
+    recent_utility_bill = serializers.FileField(write_only=True)
+
+    class Meta:
+        model = PackageOrderApplication
+        fields = [
+            "id",
+            "package_order",
+            "application_type",
+            "bvn",
+            "other_role",
+            "first_name",
+            "last_name",
+            "house_number",
+            "street_address",
+            "landmark",
+            "bus_stop",
+            "occupation",
+            "business_role",
+            "business_name",
+            "business_address",
+            "town",
+            "city",
+            "state",
+            "lga",
+            "email",
+            "phone_number",
+            "reference_phone1",
+            "reference_phone2",
+            "how_heard_about",
+            "applicant_id_card",
+            "company_registration_document",
+            "bank_statements",
+            "recent_utility_bill",
+        ]
+
+    def create(self, validated_data):
+        package = validated_data.pop("package")
+        packageOrder = PackageOrder.objects.create(package=package, **validated_data)
+        packageOrder.save()
+
+        application = PackageOrderApplication.objects.create(
+            packageOrder=packageOrder, **validated_data
+        )
+        application.save()
+        return application

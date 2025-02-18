@@ -10,6 +10,7 @@ from .serializers import (
     PackageOrderSerializer,
     PackageOrderViewSerializer,
     PackageOrderUpdateSerializer,
+    PackageApplicationSerializer,
 )
 from setting.models import Settings
 
@@ -143,4 +144,20 @@ def package_order_update(request, pk):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def package_application(request):
+    serializer = PackageApplicationSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {
+                "message": "Application created successfully",
+                "application": serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
