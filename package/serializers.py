@@ -121,7 +121,7 @@ class PackageOrderUpdateSerializer(serializers.ModelSerializer):
 
 
 class PackageApplicationSerializer(serializers.ModelSerializer):
-    package = serializers.PrimaryKeyRelatedField(queryset=Package.objects.all())
+    packageOrder = serializers.PrimaryKeyRelatedField(queryset=PackageOrder.objects.all())
     application_type = serializers.CharField(write_only=True)
     bvn = serializers.CharField(write_only=True)
     other_role = serializers.CharField(write_only=True)
@@ -144,16 +144,18 @@ class PackageApplicationSerializer(serializers.ModelSerializer):
     reference_phone1 = serializers.CharField(write_only=True)
     reference_phone2 = serializers.CharField(write_only=True)
     how_heard_about = serializers.CharField(write_only=True)
-    applicant_id_card = serializers.FileField(write_only=True)
-    company_registration_document = serializers.FileField(write_only=True)
-    bank_statements = serializers.FileField(write_only=True)
-    recent_utility_bill = serializers.FileField(write_only=True)
+    applicant_id_card = serializers.CharField(required=False, allow_null=True)
+    company_registration_document = serializers.CharField(
+        required=False, allow_null=True
+    )
+    bank_statements = serializers.CharField(required=False, allow_null=True)
+    recent_utility_bill = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = PackageOrderApplication
         fields = [
             "id",
-            "package_order",
+            "packageOrder",
             "application_type",
             "bvn",
             "other_role",
@@ -183,10 +185,7 @@ class PackageApplicationSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        package = validated_data.pop("package")
-        packageOrder = PackageOrder.objects.create(package=package, **validated_data)
-        packageOrder.save()
-
+        packageOrder = validated_data.pop("packageOrder")
         application = PackageOrderApplication.objects.create(
             packageOrder=packageOrder, **validated_data
         )
