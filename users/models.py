@@ -103,6 +103,7 @@ class QuoteApplication(models.Model):
     bank_statements = models.CharField(null=True)
     recent_utility_bill = models.CharField(null=True)
 
+
 class UploadedFile(models.Model):
     file = models.FileField(upload_to="uploads/")
     uploaded_at = models.DateTimeField(auto_now_add=True)
