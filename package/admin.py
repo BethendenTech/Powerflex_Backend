@@ -27,6 +27,6 @@ class PackageAdmin(admin.ModelAdmin):
 
 @admin.register(PackageOrder)
 class PackageOrderAdmin(admin.ModelAdmin):
-    list_display = ("package","name", "email", "phone_number")
-    list_filter = ("package","name", "email", "phone_number")
-    search_fields = ("package__name","name", "email", "phone_number")
+    list_display = ("package", "name", "email", "phone_number", "total_price")
+    list_filter = ("package", "name", "email", "phone_number", "total_price")
+    search_fields = ("package__name", "name", "email", "phone_number")
