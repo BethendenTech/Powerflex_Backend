@@ -207,6 +207,7 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
 
     # Sort components by descending capacity to prioritize higher-capacity components
     available_components = list(query.order_by("-capacity_w"))
+    print("available_components", available_components)
 
     if not available_components:
         raise ValueError(
@@ -218,6 +219,8 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
 
     for component in available_components:
         component_wattage = component.capacity_w
+        print("component_wattage", component_wattage)
+        print("required_capacity", required_capacity)
         # Calculate the number of units required
         num_units = required_capacity / component_wattage
 
@@ -301,49 +304,48 @@ def calculate_system_components(
 
     print("number_of_panels", number_of_panels)
 
+    efficiency_inverter = 0.85
+    power_factor = 0.8
+    safety_margin = 1.2
+
+    inverter_size_VA = (total_watts * safety_margin) / (
+        efficiency_inverter * power_factor
+    )
+
+    print("inverter_size_VA", inverter_size_VA)
     # **Step 4: Inverter Selection**
-    best_inverter = select_best_component(2, total_watts, system_voltage)
+    best_inverter = select_best_component(2, inverter_size_VA, system_voltage)
 
     print("best_inverter", best_inverter)
 
-    if best_inverter:
-        efficiency_inverter = (
-            best_inverter["component"].efficiency
-            if best_inverter["component"].efficiency
-            else 0.9
-        )
-        print("efficiency_inverter", efficiency_inverter)
-        power_factor = 0.8
-        safety_margin = 1.2
-
-        inverter_size_VA = (total_watts * safety_margin) / (
-            efficiency_inverter * power_factor
-        )
-        number_of_inverters = best_inverter["quantity"]
-    else:
-        efficiency_inverter = 0.9
-        inverter_size_VA = 0
-        number_of_inverters = 0
+    number_of_inverters = best_inverter["quantity"]
 
     print("inverter_size_VA", inverter_size_VA)
 
     # *Step 5: Battery Selection (Using Capacity in W)*
     battery_energy_required_Wh = solar_energy_required * 1000 * future_growth_factor
 
-    depth_of_discharge = 0.8
+    depth_of_discharge = 0.7
     temperature_factor = 0.95
     battery_efficiency = 0.9  # Default value, will be updated after battery selection
 
     # Convert required battery energy (Wh) to required capacity in W
+    print("battery_autonomy_hours", battery_autonomy_hours)
+    battery_capacity_W1 = (
+        (solar_energy_required * 1000 * future_growth_factor)
+        * (battery_autonomy_hours / 24)
+    ) / (battery_efficiency * depth_of_discharge * temperature_factor)
+
+    print("battery_capacity_W1",battery_capacity_W1)
 
     battery_capacity_W = (
         (battery_autonomy_hours / 24)
         * battery_energy_required_Wh
         / (battery_efficiency * depth_of_discharge * temperature_factor)
-    )
+    ) * 1000
     print("battery_capacity_W", battery_capacity_W)
     # Select best battery using W (Watts)
-    best_battery = select_best_component(3, battery_capacity_W, system_voltage)
+    best_battery = select_best_component(3, battery_capacity_W1, system_voltage)
     print("best_battery", best_battery)
 
     if best_battery:
