@@ -199,13 +199,14 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
     # Query components based on category and voltage (if applicable)
     query = Product.objects.filter(category_id=category_id)
 
-    if system_voltage is not None and category_id in [2, 3]:  # Inverters & Batteries only
+    if system_voltage is not None and category_id in [
+        2,
+        3,
+    ]:  # Inverters & Batteries only
         query = query.filter(voltage=system_voltage)
 
     # Sort components by descending capacity to prioritize higher-capacity components
     available_components = list(query.order_by("-capacity_w"))
-
-    print("available_components", available_components)
 
     if not available_components:
         raise ValueError(
@@ -217,10 +218,10 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
 
     for component in available_components:
         component_wattage = component.capacity_w
-
         # Calculate the number of units required
         num_units = required_capacity / component_wattage
-        if required_capacity % component_wattage != 0:
+
+        if (required_capacity % component_wattage) != 0:
             num_units = int(num_units) + 1  # Round up to ensure sufficient capacity
         else:
             num_units = int(num_units)
@@ -444,9 +445,7 @@ def calculate_system_components(
 
     # 20% profit margin calculate from back office
     total_cost_with_profit = (
-        total_cost_naira
-        + installation_and_cabling
-        + profit_margin_amount
+        total_cost_naira + installation_and_cabling + profit_margin_amount
     )
 
     if systemSetting and systemSetting.vat is not None:
@@ -455,8 +454,6 @@ def calculate_system_components(
         vat = 7.5  # Default VAT rate if not found in settings
 
     total_vat = (total_cost_with_profit * vat) / 100
-
-
 
     return {
         "total_load_kwh": total_load_kwh,
