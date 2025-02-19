@@ -138,6 +138,7 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
         query.order_by("-capacity_w")
     )  # Sort by highest capacity first
 
+
     print("available_components", category_id, available_components)
 
     if not available_components:
@@ -199,39 +200,33 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
     # Query components based on category and voltage (if applicable)
     query = Product.objects.filter(category_id=category_id)
 
-    if system_voltage is not None and category_id in [
-        2,
-        3,
-    ]:  # Inverters & Batteries only
+    if system_voltage is not None and category_id in [2, 3]:  # Inverters & Batteries only
         query = query.filter(voltage=system_voltage)
 
-    # Sort components by descending capacity to prioritize higher-capacity components
-    available_components = list(query.order_by("-capacity_w"))
+    # Sort components by ascending capacity (smallest first)
+    available_components = list(query.order_by("capacity_w"))
     print("available_components", available_components)
-
+    print("required_capacity", required_capacity)
     if not available_components:
         raise ValueError(
             f"No suitable component found for category {category_id} and voltage {system_voltage}"
         )
 
     best_component = None
-    min_quantity = float("inf")  # Initialize with a large number
+    min_excess_capacity = float("inf")  # Minimize excess power
+    min_units = float("inf")
 
     for component in available_components:
         component_wattage = component.capacity_w
-        print("component_wattage", component_wattage)
-        print("required_capacity", required_capacity)
-        # Calculate the number of units required
-        num_units = required_capacity / component_wattage
+        num_units = (required_capacity + component_wattage - 1) // component_wattage  # Ceiling division
 
-        if (required_capacity % component_wattage) != 0:
-            num_units = int(num_units) + 1  # Round up to ensure sufficient capacity
-        else:
-            num_units = int(num_units)
+        total_capacity = num_units * component_wattage
+        excess_capacity = total_capacity - required_capacity  # Extra capacity beyond requirement
 
-        # Update the best component if this one requires fewer units
-        if num_units < min_quantity:
-            min_quantity = num_units
+        # Prioritize smallest number of units, then minimize excess capacity
+        if num_units < min_units or (num_units == min_units and excess_capacity < min_excess_capacity):
+            min_units = num_units
+            min_excess_capacity = excess_capacity
             best_component = {"component": component, "quantity": num_units}
 
     if best_component:
