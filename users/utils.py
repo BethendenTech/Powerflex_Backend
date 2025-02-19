@@ -293,7 +293,6 @@ def calculate_system_components(
 
     best_panel = select_best_component(1, solar_power_required_losses_adj_W)
     print("best_panel", best_panel)
-    print('best_panel["component"].capacity_w', best_panel["component"].capacity_w)
     number_of_panels = (
         solar_power_required_losses_adj_W / best_panel["component"].capacity_w
         if best_panel and best_panel["component"].capacity_w > 0
@@ -492,8 +491,11 @@ def calculate_system_components(
         "total_vat": total_vat,
         "products": {
             "best_panel": safe_model_to_dict(best_panel["component"]),
+            "number_of_panels": round(number_of_panels),
             "best_inverter": safe_model_to_dict(best_inverter["component"]),
+            "number_of_inverters": round(number_of_inverters),
             "best_battery": safe_model_to_dict(best_battery["component"]),
+            "number_of_batteries": round(total_batteries_needed),
         },
         "price_band_data": safe_model_to_dict(price_band_data),
     }
