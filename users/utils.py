@@ -196,15 +196,14 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
     Returns:
         dict: Selected component and the number of identical units required.
     """
+    # Query components based on category and voltage (if applicable)
     query = Product.objects.filter(category_id=category_id)
 
-    if system_voltage is not None and category_id in [
-        2,
-        3,
-    ]:  # Inverters & Batteries only
+    if system_voltage is not None and category_id in [2, 3]:  # Inverters & Batteries only
         query = query.filter(voltage=system_voltage)
 
-    available_components = list(query.order_by("capacity_w"))  # Sort by ascending power
+    # Sort components by descending capacity to prioritize higher-capacity components
+    available_components = list(query.order_by("-capacity_w"))
 
     print("available_components", available_components)
 
@@ -213,23 +212,30 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
             f"No suitable component found for category {category_id} and voltage {system_voltage}"
         )
 
+    best_component = None
+    min_quantity = float("inf")  # Initialize with a large number
+
     for component in available_components:
         component_wattage = component.capacity_w
 
-        # If a single unit is enough, select it
-        if component_wattage >= required_capacity:
-            return {"component": component, "quantity": 1}
-
-        # If a single unit isn't enough, determine the required quantity
-        num_units = required_capacity // component_wattage
+        # Calculate the number of units required
+        num_units = required_capacity / component_wattage
         if required_capacity % component_wattage != 0:
-            num_units += 1  # Round up to ensure sufficient capacity
+            num_units = int(num_units) + 1  # Round up to ensure sufficient capacity
+        else:
+            num_units = int(num_units)
 
-        return {"component": component, "quantity": num_units}
+        # Update the best component if this one requires fewer units
+        if num_units < min_quantity:
+            min_quantity = num_units
+            best_component = {"component": component, "quantity": num_units}
 
-    raise ValueError(
-        f"Unable to meet {required_capacity}W requirement with available components."
-    )
+    if best_component:
+        return best_component
+    else:
+        raise ValueError(
+            f"Unable to meet {required_capacity}W requirement with available components."
+        )
 
 
 # Function to calculate the system's components
