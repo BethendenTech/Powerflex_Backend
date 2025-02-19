@@ -30,7 +30,6 @@ class Quote(models.Model):
     price_band = models.CharField(max_length=255)
 
     additional_info = models.BooleanField(null=True)
-    battery_autonomy_days = models.IntegerField(null=True)
     battery_autonomy_hours = models.IntegerField(null=True)
     battery_autonomy_hours_only = models.IntegerField(null=True)
     solar_load = models.FloatField(null=True)

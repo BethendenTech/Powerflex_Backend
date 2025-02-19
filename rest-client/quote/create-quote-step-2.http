@@ -5,7 +5,6 @@ Accept: application/json
 {
   "quote_number": "17C56F50",
   "additional_info": false,
-  "battery_autonomy_days": 0,
   "battery_autonomy_hours": 0,
   "battery_autonomy_hours_only": 12,
   "solar_load": 50

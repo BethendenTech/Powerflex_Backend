@@ -238,7 +238,6 @@ class CreateQuoteStep1Serializer(serializers.Serializer):
 
 class CreateQuoteStep2Serializer(serializers.Serializer):
     additional_info = serializers.BooleanField(required=False, allow_null=True)
-    battery_autonomy_days = serializers.IntegerField(required=False, allow_null=True)
     battery_autonomy_hours = serializers.IntegerField(required=False, allow_null=True)
     battery_autonomy_hours_only = serializers.IntegerField(
         required=False, allow_null=True
