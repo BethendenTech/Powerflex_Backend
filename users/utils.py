@@ -291,11 +291,7 @@ def calculate_system_components(
 
     best_panel = select_best_component(1, solar_power_required_losses_adj_W)
     print("best_panel", best_panel)
-    number_of_panels = (
-        solar_power_required_losses_adj_W / best_panel["component"].capacity_w
-        if best_panel and best_panel["component"].capacity_w > 0
-        else 0
-    )
+    number_of_panels = best_panel["quantity"]
 
     print("number_of_panels", number_of_panels)
 
@@ -389,7 +385,7 @@ def calculate_system_components(
     print("battery_capacity_Ah", battery_capacity_Ah)
 
     print("total_batteries_needed", total_batteries_needed)
-
+    number_of_batteries = best_battery['quantity']
     # **Step 6: Retrieve Prices & Calculate Costs**
     panel_price_usd = float(best_panel["component"].price_usd or 0) if best_panel else 0
     inverter_price_usd = (
@@ -402,7 +398,7 @@ def calculate_system_components(
     total_cost_usd = (
         (number_of_panels * panel_price_usd)
         + (number_of_inverters * inverter_price_usd)
-        + (total_batteries_needed * battery_price_usd)
+        + (number_of_batteries * battery_price_usd)
     )
     total_cost_naira = total_cost_usd * exchange_rate
 
@@ -435,6 +431,7 @@ def calculate_system_components(
     if is_finance:
         profit_margin = profit_margin_financing
         profit_margin_amount = (total_cost_naira * profit_margin_financing) / 100
+        
     else:
         profit_margin = profit_margin_outright
         profit_margin_amount = (total_cost_naira * profit_margin_outright) / 100
@@ -444,18 +441,23 @@ def calculate_system_components(
         total_cost_naira + installation_and_cabling + profit_margin_amount
     )
 
+    print("total_cost_with_profit", total_cost_with_profit)
+
+   
+
     if systemSetting and systemSetting.vat is not None:
         vat = float(systemSetting.vat)
     else:
         vat = 7.5  # Default VAT rate if not found in settings
 
     total_vat = (total_cost_with_profit * vat) / 100
+    total_cost_with_profit = total_cost_with_profit + total_vat
 
     return {
         "total_load_kwh": total_load_kwh,
         "load_covered_by_solar": load_covered_by_solar,
         "total_equipments": round(
-            number_of_panels + number_of_inverters + total_batteries_needed
+            number_of_panels + number_of_inverters + round(number_of_batteries, 2)
         ),
         "system_voltage": system_voltage,
         "battery_voltage": battery_voltage,
@@ -467,7 +469,7 @@ def calculate_system_components(
         "battery_capacity_Ah": round(battery_capacity_Ah, 2),
         "batteries_in_series": round(batteries_in_series, 2),
         "batteries_in_parallel": round(batteries_in_parallel, 2),
-        "total_batteries_needed": round(total_batteries_needed, 2),
+        "total_batteries_needed": round(number_of_batteries, 2),
         "solar_power_required_kW": round(solar_power_required_kW, 2),
         "load_covered_by_solar": round(load_covered_by_solar, 2),
         "solar_power_required_losses_adj_W": round(
