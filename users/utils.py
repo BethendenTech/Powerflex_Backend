@@ -138,6 +138,7 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
         query.order_by("-capacity_w")
     )  # Sort by highest capacity first
 
+
     print("available_components", category_id, available_components)
 
     if not available_components:
@@ -199,39 +200,33 @@ def select_best_component(category_id, required_capacity, system_voltage=None):
     # Query components based on category and voltage (if applicable)
     query = Product.objects.filter(category_id=category_id)
 
-    if system_voltage is not None and category_id in [
-        2,
-        3,
-    ]:  # Inverters & Batteries only
+    if system_voltage is not None and category_id in [2, 3]:  # Inverters & Batteries only
         query = query.filter(voltage=system_voltage)
 
-    # Sort components by descending capacity to prioritize higher-capacity components
-    available_components = list(query.order_by("-capacity_w"))
+    # Sort components by ascending capacity (smallest first)
+    available_components = list(query.order_by("capacity_w"))
     print("available_components", available_components)
-
+    print("required_capacity", required_capacity)
     if not available_components:
         raise ValueError(
             f"No suitable component found for category {category_id} and voltage {system_voltage}"
         )
 
     best_component = None
-    min_quantity = float("inf")  # Initialize with a large number
+    min_excess_capacity = float("inf")  # Minimize excess power
+    min_units = float("inf")
 
     for component in available_components:
         component_wattage = component.capacity_w
-        print("component_wattage", component_wattage)
-        print("required_capacity", required_capacity)
-        # Calculate the number of units required
-        num_units = required_capacity / component_wattage
+        num_units = (required_capacity + component_wattage - 1) // component_wattage  # Ceiling division
 
-        if (required_capacity % component_wattage) != 0:
-            num_units = int(num_units) + 1  # Round up to ensure sufficient capacity
-        else:
-            num_units = int(num_units)
+        total_capacity = num_units * component_wattage
+        excess_capacity = total_capacity - required_capacity  # Extra capacity beyond requirement
 
-        # Update the best component if this one requires fewer units
-        if num_units < min_quantity:
-            min_quantity = num_units
+        # Prioritize smallest number of units, then minimize excess capacity
+        if num_units < min_units or (num_units == min_units and excess_capacity < min_excess_capacity):
+            min_units = num_units
+            min_excess_capacity = excess_capacity
             best_component = {"component": component, "quantity": num_units}
 
     if best_component:
@@ -296,11 +291,7 @@ def calculate_system_components(
 
     best_panel = select_best_component(1, solar_power_required_losses_adj_W)
     print("best_panel", best_panel)
-    number_of_panels = (
-        solar_power_required_losses_adj_W / best_panel["component"].capacity_w
-        if best_panel and best_panel["component"].capacity_w > 0
-        else 0
-    )
+    number_of_panels = best_panel["quantity"]
 
     print("number_of_panels", number_of_panels)
 
@@ -394,7 +385,7 @@ def calculate_system_components(
     print("battery_capacity_Ah", battery_capacity_Ah)
 
     print("total_batteries_needed", total_batteries_needed)
-
+    number_of_batteries = best_battery['quantity']
     # **Step 6: Retrieve Prices & Calculate Costs**
     panel_price_usd = float(best_panel["component"].price_usd or 0) if best_panel else 0
     inverter_price_usd = (
@@ -407,7 +398,7 @@ def calculate_system_components(
     total_cost_usd = (
         (number_of_panels * panel_price_usd)
         + (number_of_inverters * inverter_price_usd)
-        + (total_batteries_needed * battery_price_usd)
+        + (number_of_batteries * battery_price_usd)
     )
     total_cost_naira = total_cost_usd * exchange_rate
 
@@ -440,6 +431,7 @@ def calculate_system_components(
     if is_finance:
         profit_margin = profit_margin_financing
         profit_margin_amount = (total_cost_naira * profit_margin_financing) / 100
+        
     else:
         profit_margin = profit_margin_outright
         profit_margin_amount = (total_cost_naira * profit_margin_outright) / 100
@@ -449,18 +441,23 @@ def calculate_system_components(
         total_cost_naira + installation_and_cabling + profit_margin_amount
     )
 
+    print("total_cost_with_profit", total_cost_with_profit)
+
+   
+
     if systemSetting and systemSetting.vat is not None:
         vat = float(systemSetting.vat)
     else:
         vat = 7.5  # Default VAT rate if not found in settings
 
     total_vat = (total_cost_with_profit * vat) / 100
+    total_cost_with_profit = total_cost_with_profit + total_vat
 
     return {
         "total_load_kwh": total_load_kwh,
         "load_covered_by_solar": load_covered_by_solar,
         "total_equipments": round(
-            number_of_panels + number_of_inverters + total_batteries_needed
+            number_of_panels + number_of_inverters + round(number_of_batteries, 2)
         ),
         "system_voltage": system_voltage,
         "battery_voltage": battery_voltage,
@@ -472,7 +469,7 @@ def calculate_system_components(
         "battery_capacity_Ah": round(battery_capacity_Ah, 2),
         "batteries_in_series": round(batteries_in_series, 2),
         "batteries_in_parallel": round(batteries_in_parallel, 2),
-        "total_batteries_needed": round(total_batteries_needed, 2),
+        "total_batteries_needed": round(number_of_batteries, 2),
         "solar_power_required_kW": round(solar_power_required_kW, 2),
         "load_covered_by_solar": round(load_covered_by_solar, 2),
         "solar_power_required_losses_adj_W": round(

@@ -50,6 +50,7 @@ class QuoteSerializer(serializers.Serializer):
     number_of_panels = serializers.IntegerField(read_only=True)
     number_of_inverters = serializers.IntegerField(read_only=True)
     number_of_batteries = serializers.IntegerField(read_only=True)
+    total_batteries_needed = serializers.IntegerField(read_only=True)
     total_cost_with_profit = serializers.FloatField(read_only=True)
     total_load_kwh = serializers.FloatField(read_only=True)
     load_covered_by_solar = serializers.FloatField(read_only=True)
