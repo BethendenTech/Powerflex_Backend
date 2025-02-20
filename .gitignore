@@ -1,3 +1,4 @@
 /.vscode
-
+path/to
+*.pyc
 .env.local
