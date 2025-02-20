@@ -133,7 +133,7 @@ class PackageApplicationSerializer(serializers.ModelSerializer):
     bus_stop = serializers.CharField(write_only=True)
     occupation = serializers.CharField(write_only=True)
     business_role = serializers.CharField(write_only=True)
-    business_name = serializers.CharField(write_only=True)
+    business_name = serializers.CharField(required=False, allow_null=True)
     business_address = serializers.CharField(write_only=True)
     town = serializers.CharField(write_only=True)
     city = serializers.CharField(write_only=True)
